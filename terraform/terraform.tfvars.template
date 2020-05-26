@@ -1,0 +1,8 @@
+org_name       = ""
+base_url       = "okta.com"
+api_token      = "<OKTA_API_TOKEN>"
+app_url        = "https://<my_app_base>"
+environment    = "dev"
+aws_region     = "us-east-1"
+aws_profile    = "serverless-okta"
+aws_ssm_prefix = "dac"

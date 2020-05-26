@@ -1,0 +1,262 @@
+# OKTA DAC API TENANTS
+
+service: okta-dac-api
+
+# # app and org for use with dashboard.serverless.com
+# app: dac-api-tenants
+# org: rschallerokta
+
+# You can pin your service to only deploy with a specific Serverless version
+# Check out our docs for more details
+# frameworkVersion: "=X.X.X"
+plugins:
+  - serverless-offline
+
+custom:
+  env: ${file(./${self:provider.stage}.env.json)}  
+  region: ${opt:region, self:provider.region}
+  stage: ${opt:stage, self:provider.stage}
+
+provider:
+  name: aws
+  runtime: nodejs10.x
+  profile: dac-serverless-admin
+  region: us-east-2
+  stage: dev
+  environment:
+    ISSUER: ${self:custom.env.ISSUER}
+    AUD: ${self:custom.env.AUDIENCE}
+    OKTA_API_KEY: ${self:custom.env.OKTA_API_KEY}
+    CLIENT_ID: ${self:custom.env.CLIENT_ID}
+    TEMPLATE_CERT: ${self:custom.env.TEMPLATE_CERT}
+    IDP_DISCO_POLICY_ID: ${self:custom.env.IDP_DISCO_POLICY_ID}
+    DNS_VERIFY_PREFIX: ${self:custom.env.DNS_VERIFY_PREFIX}
+
+functions:
+  # Authorizer
+  oktaAuth:
+    handler: authorizer/auth.handler
+    cors: true
+  # Tenant  
+  addTenant:
+    handler: tenants/add.handler
+    events:
+      - http:
+          path: tenants
+          method: post
+          cors: true
+          authorizer:
+            name: oktaAuth
+            identityValidationExpression: ^Bearer [-0-9a-zA-z\.]*$
+            resultTtlInSeconds: 0
+  getTenant:
+    handler: tenants/get.handler
+    events:
+      - http:
+          path: tenants/{tenant}
+          method: get
+          cors: true
+          authorizer:
+            name: oktaAuth
+            identityValidationExpression: ^Bearer [-0-9a-zA-z\.]*$
+            resultTtlInSeconds: 0
+  deleteTenant:
+    handler: tenants/delete.handler
+    events:
+      - http:
+          path: tenants/{tenant}
+          method: delete
+          cors: true
+          authorizer:
+            name: oktaAuth
+            identityValidationExpression: ^Bearer [-0-9a-zA-z\.]*$
+            resultTtlInSeconds: 0
+  updateTenant:
+    handler: tenants/update.handler
+    events:
+      - http:
+          path: tenants/{tenant}
+          method: put
+          cors: true
+          authorizer:
+            name: oktaAuth
+            identityValidationExpression: ^Bearer [-0-9a-zA-z\.]*$
+            resultTtlInSeconds: 0
+  listTenants:
+    handler: tenants/list.handler
+    events:
+      - http:
+          path: tenants
+          method: get
+          cors: true
+          authorizer:
+            name: oktaAuth
+            identityValidationExpression: ^Bearer [-0-9a-zA-z\.]*$
+            resultTtlInSeconds: 0
+  # Tenant Apps
+  listTenantApps:
+    handler: tenants/apps/list.handler
+    events:
+      - http:
+          path: tenants/{tenant}/apps
+          method: get
+          cors: true
+          authorizer:
+            name: oktaAuth
+            identityValidationExpression: ^Bearer [-0-9a-zA-z\.]*$
+            resultTtlInSeconds: 0
+  activateTenantApp:
+    handler: tenants/apps/activate.handler
+    events:
+      - http:
+          path: tenants/{tenant}/apps/{appId}
+          method: put
+          cors: true
+          authorizer:
+            name: oktaAuth
+            identityValidationExpression: ^Bearer [-0-9a-zA-z\.]*$
+            resultTtlInSeconds: 0
+  deactivateTenantApp:
+    handler: tenants/apps/deactivate.handler
+    events:
+      - http:
+          path: tenants/{tenant}/apps/{appId}
+          method: delete
+          cors: true
+          authorizer:
+            name: oktaAuth
+            identityValidationExpression: ^Bearer [-0-9a-zA-z\.]*$
+            resultTtlInSeconds: 0     
+  # Tenant Adamins
+  listTenantAdmins:
+    handler: tenants/admins/list.handler
+    events:
+      - http:
+          path: tenants/{tenant}/admins
+          method: get
+          cors: true
+          authorizer:
+            name: oktaAuth
+            identityValidationExpression: ^Bearer [-0-9a-zA-z\.]*$
+            resultTtlInSeconds: 0
+  assignTenantAdmin:
+    handler: tenants/admins/assign.handler
+    events:
+      - http:
+          path: tenants/{tenant}/admins/{userId}
+          method: put
+          cors: true
+          authorizer:
+            name: oktaAuth
+            identityValidationExpression: ^Bearer [-0-9a-zA-z\.]*$
+            resultTtlInSeconds: 0
+  # Tenant Domains
+  addTenantDomain:
+    handler: tenants/domains/add.handler
+    events:
+      - http:
+          path: tenants/{tenant}/domains
+          method: post
+          cors: true
+          authorizer:
+            name: oktaAuth
+            identityValidationExpression: ^Bearer [-0-9a-zA-z\.]*$
+            resultTtlInSeconds: 0
+  deleteTenantDomain:
+    handler: tenants/domains/delete.handler
+    events:
+      - http:
+          path: tenants/{tenant}/domains/{domain}
+          method: delete
+          cors: true
+          authorizer:
+            name: oktaAuth
+            identityValidationExpression: ^Bearer [-0-9a-zA-z\.]*$
+            resultTtlInSeconds: 0
+  verifyTenantDomain:
+    handler: tenants/domains/verify.handler
+    events:
+      - http:
+          path: tenants/{tenant}/domains/{domain}
+          method: put
+          cors: true
+          authorizer:
+            name: oktaAuth
+            identityValidationExpression: ^Bearer [-0-9a-zA-z\.]*$
+            resultTtlInSeconds: 0
+  listTenantDomains:
+    handler: tenants/domains/list.handler
+    events:
+      - http:
+          path: tenants/{tenant}/domains
+          method: get
+          cors: true
+          authorizer:
+            name: oktaAuth
+            identityValidationExpression: ^Bearer [-0-9a-zA-z\.]*$
+            resultTtlInSeconds: 0            
+  # Apps
+  listApps:
+    handler: apps/list.handler
+    events:
+      - http:
+          path: apps
+          method: get
+          cors: true
+          authorizer:
+            name: oktaAuth
+            identityValidationExpression: ^Bearer [-0-9a-zA-z\.]*$
+            resultTtlInSeconds: 0
+  # Idps
+  getIdp:
+    handler: idps/get.handler
+    events:
+      - http:
+          path: idps/{idpId}
+          method: get
+          cors: true
+          authorizer:
+            name: oktaAuth
+            identityValidationExpression: ^Bearer [-0-9a-zA-z\.]*$
+            resultTtlInSeconds: 0
+  listIdps:
+    handler: idps/list.handler
+    events:
+      - http:
+          path: idps
+          method: get
+          cors: true
+          authorizer:
+            name: oktaAuth
+            identityValidationExpression: ^Bearer [-0-9a-zA-z\.]*$
+            resultTtlInSeconds: 0
+  getIdpMetadata:
+    handler: idps/metadata.handler
+    events:
+      - http:
+          path: idps/{idpId}/metadata.xml
+          method: get
+          cors: true
+          authorizer:
+            name: oktaAuth
+            identityValidationExpression: ^Bearer [-0-9a-zA-z\.]*$
+            resultTtlInSeconds: 0
+  updateIdp:
+    handler: idps/update.handler
+    events:
+      - http:
+          path: idps/{idpId}
+          method: put
+          cors: true
+          authorizer:
+            name: oktaAuth
+            identityValidationExpression: ^Bearer [-0-9a-zA-z\.]*$
+            resultTtlInSeconds: 0
+  # o4o Proxy
+  proxy:
+      handler: o4o/proxy.handler
+      events:
+        - http:
+            path: /api/v1/{proxy+}
+            method: ANY
+            cors: true
