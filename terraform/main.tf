@@ -10,6 +10,11 @@ provider "okta" {
   version   = "~> 3.0"
 }
 
+# Local variables
+locals {
+  app_name = "dac-admin"
+}
+
 # dac Users - Everyone 
 data "okta_group" "dac-users" {
   name = "Everyone"
@@ -26,9 +31,10 @@ resource "okta_group_roles" "dac-superusers" {
 }
 
 # Get default IDP Policy
-# data "okta_default_policy" "idp_policy" {
-#   type = "IDP_DISCOVERY"
-# }
+data "okta_policy" "idp_policy" {
+  name = "Idp Discovery Policy"
+  type = "IDP_DISCOVERY"
+}
 
 # Create OAuth2 SPA App
 resource "okta_app_oauth" "okta-dac" {
@@ -155,28 +161,4 @@ resource "okta_auth_server_policy_rule" "okta-dac-catch-all" {
   scope_whitelist               = ["*"]
   group_whitelist               = [data.okta_group.dac-users.id]
   access_token_lifetime_minutes = 60
-}
-
-
-
-# Outputs
-output "okta_app_oauth_client_id" {
-  value = okta_app_oauth.okta-dac.client_id
-}
-
-output "okta_auth_server_id" {
-  value = okta_auth_server.okta-dac.id
-}
-
-output "okta_auth_server_issuer_uri" {
-  value = "https://${var.org_name}.${var.base_url}/oauth2/${okta_auth_server.okta-dac.id}"
-}
-
-# output "okta_idp_policy" {
-#   value = "${data.okta_default_policy.idp_policy.id}"
-# }
-
-# Local variables
-locals {
-  app_name = "dac-admin"
 }
