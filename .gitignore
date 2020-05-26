@@ -9,6 +9,7 @@ terraform.tfstate.backup
 /api/*/node_modules
 
 *.tfvars
+okta.setup.tfplan
 
 # local env files
 .env.local
