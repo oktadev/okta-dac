@@ -57,7 +57,7 @@ resource "okta_app_user_schema" "okta-dac-tenants" {
 # Create the App Assignment
 resource "okta_app_group_assignment" "okta-dac" {
   app_id   = okta_app_oauth.okta-dac.id
-  group_id = data.okta_group.dac-users.id
+  group_id = okta_group.dac-superusers.id
 }
 
 # Create Trusted Origin for the APP
