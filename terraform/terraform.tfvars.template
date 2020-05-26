@@ -1,7 +1,7 @@
 org_name       = ""
 base_url       = "okta.com"
 api_token      = "<OKTA_API_TOKEN>"
-app_url        = "https://<my_app_base>"
+app_url        = "http://localhost:8080"
 environment    = "dev"
 aws_region     = "us-east-1"
 aws_profile    = "serverless-okta"

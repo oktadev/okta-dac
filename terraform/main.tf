@@ -34,7 +34,7 @@ resource "okta_group_roles" "dac-superusers" {
 resource "okta_app_oauth" "okta-dac" {
   label                      = local.app_name
   type                       = "browser"
-  redirect_uris              = ["${var.app_url}/callback"]
+  redirect_uris              = ["${var.app_url}/oauth/callback"]
   grant_types                = ["authorization_code"]
   response_types             = ["code"]
   token_endpoint_auth_method = "none"
@@ -78,7 +78,7 @@ resource "okta_auth_server" "okta-dac" {
 resource "okta_auth_server_scope" "okta-dac" {
   auth_server_id   = okta_auth_server.okta-dac.id
   metadata_publish = "ALL_CLIENTS"
-  name             = "dac.admins"
+  name             = "dac.admin"
   description      = "Scope for accessing the okta-dac App"
   consent          = "IMPLICIT"
 }
