@@ -10,22 +10,29 @@ help:
 TERRAFORM_VERSION := $(shell terraform --version 2>/dev/null)
 SERVERLESS_VERSION := $(shell serverless -v 2>/dev/null)
 AWSCLI_VERSION := $(shell aws --version 2>/dev/null)
+TFVAR_EXISTS := $(shell test -s ./terraform/terraform.tfvars && echo exists)
 
+.PHONY: check
 check:
 ifdef TERRAFORM_VERSION
 	@echo "Found $(TERRAFORM_VERSION)"
 else
-	@echo "`terraform` not found. Please see: https://docs.idp.rocks/setup/#install-terraform for details."
+	@echo "'terraform' CLI not found. Please see: https://docs.idp.rocks/setup/#install-terraform for details."
 endif
 ifdef SERVERLESS_VERSION
 	@echo "Found Serverless: $(SERVERLESS_VERSION)"
 else
-	@echo "`serverless` not found. Please see: https://docs.idp.rocks/setup/#install-serverless for details."
+	@echo "'serverless' CLI not found. Please see: https://docs.idp.rocks/setup/#install-serverless for details."
 endif
 ifdef AWSCLI_VERSION
 	@echo "Found $(AWSCLI_VERSION)"
 else
-	@echo "`aws` not found. Please see: https://docs.idp.rocks/setup/#install-aws-cli for details. "
+	@echo "'aws' CLI not found. Please see: https://docs.idp.rocks/setup/#install-aws-cli for details. "
+endif
+ifdef TFVAR_EXISTS
+	@echo "Found terraform.tfvars"
+else
+	@echo "'terraform.tfvars' not found. Please see https://docs.idp.rocks/setup/#terraform for configuring the file. "
 endif
 
 TERRAFORM-exists: ; @which terraform > /dev/null
