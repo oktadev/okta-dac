@@ -1,7 +1,7 @@
 {
-  "name": "dac-api-tenants",
+  "name": "dac-api",
   "version": "1.0.0",
-  "description": "",
+  "description": "Delegated Admin Console API for AWS",
   "main": "handler.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

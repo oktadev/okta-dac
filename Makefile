@@ -106,8 +106,11 @@ setupSpa: createVueEnv
 
 .PHONY: spa
 spa: setupSpa
-	@cd ${SPA_DIR} && \
-	serverless deploy -v
+	echo "Run 'npm run serve'"
+
+#   Experimental - for CloudFront, S3, Route53 setup in AWS for the SPA
+#	@cd ${SPA_DIR} && \
+#	serverless deploy -v
 
 .PHONY: removeSpa
 removeSpa: 
