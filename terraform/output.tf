@@ -19,5 +19,8 @@ output "vue_env_dev" {
 VUE_APP_CLIENT_ID=${okta_app_oauth.okta-dac.client_id}
 VUE_APP_ISSUER=https://${var.org_name}.${var.base_url}/oauth2/${okta_auth_server.okta-dac.id}
 VUE_APP_ENFORCE_DOMAIN_CHECK=true
+VUE_APP_LOGO=
+VUE_APP_LOGO_INVERSE=
+VUE_APP_COMPANY_NAME=
 EOF
 }

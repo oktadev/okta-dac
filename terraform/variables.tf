@@ -12,6 +12,10 @@ variable "base_url" {
 variable "app_url" {
 }
 
+variable "superuser_id" {
+
+}
+
 variable "environment" {
   default = "dev"
 }

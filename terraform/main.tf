@@ -20,9 +20,17 @@ data "okta_group" "dac-users" {
   name = "Everyone"
 }
 
+data "okta_user" "dac-superuser" {
+  user_id = var.superuser_id
+}
+
 # dac Users - Everyone 
 resource "okta_group" "dac-superusers" {
   name = "SUPERUSERS"
+
+  users = [
+    var.superuser_id
+  ]
 }
 
 resource "okta_group_roles" "dac-superusers" {
