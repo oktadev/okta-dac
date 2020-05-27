@@ -58,8 +58,13 @@ destroyOkta: destroyOktaPlan
 	@cd ${TERRAFORM} && \
 	terraform apply -auto-approve okta.delete.tfplan
 
+.PHONY: createEnvJson
+createEnvJson: okta
+	@cd ${TERRAFORM} && \
+	terraform output vue_env_json > ../${API_DIR}/dev.env.json	
+
 .PHONY: setupApi
-setupApi: 
+setupApi: createEnvJson
 	@cd ${API_DIR} && \
 	npm install
 
