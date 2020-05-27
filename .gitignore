@@ -10,6 +10,7 @@ terraform.tfstate.backup
 
 *.tfvars
 okta.setup.tfplan
+okta.delete.tfplan
 
 # local env files
 .env.local
