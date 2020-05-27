@@ -1,5 +1,5 @@
 # This is the aws CLI command that must be run
-output "vue_env_json" {
+output "api_env_json" {
   value = <<EOF
   {
   "ISSUER": "https://${var.org_name}.${var.base_url}/oauth2/${okta_auth_server.okta-dac.id}",
@@ -11,5 +11,13 @@ output "vue_env_json" {
   "IDP_DISCO_POLICY_ID": "${data.okta_policy.idp_policy.id}",
   "DNS_VERIFY_PREFIX": "_oktadac.verification"    
   }
+EOF
+}
+
+output "vue_env_dev" {
+  value = <<EOF
+VUE_APP_CLIENT_ID=${okta_app_oauth.okta-dac.client_id}
+VUE_APP_ISSUER=https://${var.org_name}.${var.base_url}/oauth2/${okta_auth_server.okta-dac.id}
+VUE_APP_ENFORCE_DOMAIN_CHECK=true
 EOF
 }
