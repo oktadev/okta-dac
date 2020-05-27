@@ -35,6 +35,8 @@ SERVERLESS-exists: ; @which serverless > /dev/null
 .DEFAULT_GOAL := all
 all: check okta api spa
 
+removeAll: check removeSpa removeApi destroyOkta
+
 .PHONY: planOkta
 planOkta: 
 	@cd ${TERRAFORM} && \
@@ -59,9 +61,9 @@ destroyOkta: destroyOktaPlan
 	terraform apply -auto-approve okta.delete.tfplan
 
 .PHONY: createEnvJson
-createEnvJson: okta
+createEnvJson: 
 	@cd ${TERRAFORM} && \
-	terraform output vue_env_json > ../${API_DIR}/dev.env.json	
+	terraform output api_env_json > ../${API_DIR}/dev.env.json
 
 .PHONY: setupApi
 setupApi: createEnvJson
@@ -76,10 +78,22 @@ api: setupApi
 .PHONY: removeApi
 removeApi: 
 	@cd ${API_DIR} && \
-	serverless remove -v
+	serverless remove -v && \
+	rm -rf node_modules
+
+.PHONY: createEnvLocal
+createEnvLocal: 
+	@cd ${TERRAFORM} && \
+	terraform output vue_env_dev > ../${SPA_DIR}/.env.development.local
+
+.PHONY: createVueEnv
+createVueEnv: createEnvLocal
+	@cd ${API_DIR} && \
+	printf %s "VUE_APP_API=" >> ../${SPA_DIR}/.env.development.local && \
+	serverless info --verbose | grep ServiceEndpoint | grep -o 'http.*' >> ../${SPA_DIR}/.env.development.local
 
 .PHONY: setupSpa
-setupSpa: 
+setupSpa: createVueEnv
 	@cd ${SPA_DIR} && \
 	npm install
 
@@ -87,3 +101,9 @@ setupSpa:
 spa: setupSpa
 	@cd ${SPA_DIR} && \
 	serverless deploy -v
+
+.PHONY: removeSpa
+removeSpa: 
+	@cd ${SPA_DIR} && \
+	serverless remove -v && \
+	rm -rf node_modules dist
