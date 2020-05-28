@@ -21,7 +21,10 @@ data "okta_group" "dac-users" {
 }
 
 data "okta_user" "dac-superuser" {
-  user_id = var.superuser_id
+  search {
+    name  = "profile.email"
+    value = var.superuser_email
+  }
 }
 
 # dac Users - Everyone 
@@ -29,7 +32,7 @@ resource "okta_group" "dac-superusers" {
   name = "SUPERUSERS"
 
   users = [
-    var.superuser_id
+    data.okta_user.dac-superuser.id
   ]
 }
 
