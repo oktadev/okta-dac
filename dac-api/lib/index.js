@@ -7,10 +7,10 @@ const headers = {
     }
 };
 
-async function getAdminsGroup(name) {
+async function getGroup(type, name) {
     try {        
-        const res = await axios.get(orgUrl + '/api/v1/groups?q=ADMINS_' + name + '&limit=2', headers);
-        if (res.status == 200 && res.data.length == 1 && res.data[0].profile.name == 'ADMINS_' + name) {
+        const res = await axios.get(orgUrl + '/api/v1/groups?q=' + type + '_' + name + '&limit=2', headers);
+        if (res.status == 200 && res.data.length == 1 && res.data[0].profile.name == type + '_' + name) {
             let body = res.data[0];
             delete body._links;
             return {
@@ -23,6 +23,14 @@ async function getAdminsGroup(name) {
     }
     // did not find tenant (did not return 200). Return a custom 404 response
     throw standardResponses.notFound;
+}
+
+async function getUsersGroup(name) {
+    return getGroup('USERS', name);
+}
+
+async function getAdminsGroup(name) {
+    return getGroup('ADMINS', name);
 }
 
 async function addKey(x5c) {
@@ -69,6 +77,7 @@ async function addGroupAdminTarget(groupId, roleId, targetId) {
 module.exports = {
     orgUrl, headers, axios, standardResponses, 
     getAdminsGroup, 
+    getUsersGroup,
     addKey, 
     addGroupAdminTarget
 }

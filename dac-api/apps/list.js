@@ -19,7 +19,10 @@ module.exports.handler = async (event, context) => {
                 const tenants = JSON.parse(claims.tenants);
                 if (tenants && tenants.length > 0) {
                     for (const tenant of tenants) {
-                        res = await getTenantApps.getTenantApps(tenant.split(':')[1]);
+                        res = await getTenantApps.getTenantApps(
+                            tenant.split(':')[1],
+                            event.requestContext.authorizer
+                        );
                         filtered = filtered.concat(res.data);
                     }
                 }
@@ -32,10 +35,10 @@ module.exports.handler = async (event, context) => {
                 id: app.id,
                 APPUSERS_groupId: app.APPUSERS_groupId,
                 name: app.label ? app.label.split('MTA_')[1] : app.name,
-                // profile: app.profile,
                 created: app.created,
                 lastUpdated: app.lastUpdated,
-                logo: app.logo ? app.logo : app._links.logo
+                logo: app.logo ? app.logo : app._links.logo,
+                settings: app.settings
             };
         });
         return {

@@ -105,8 +105,8 @@ functions:
             name: oktaAuth
             identityValidationExpression: ^Bearer [-0-9a-zA-z\.]*$
             resultTtlInSeconds: 0
-  activateTenantApp:
-    handler: tenants/apps/activate.handler
+  postTenantApp:
+    handler: tenants/apps/post.handler
     events:
       - http:
           path: tenants/{tenant}/apps/{appId}
@@ -126,7 +126,7 @@ functions:
           authorizer:
             name: oktaAuth
             identityValidationExpression: ^Bearer [-0-9a-zA-z\.]*$
-            resultTtlInSeconds: 0     
+            resultTtlInSeconds: 0  
   # Tenant Adamins
   listTenantAdmins:
     handler: tenants/admins/list.handler
@@ -207,6 +207,17 @@ functions:
             name: oktaAuth
             identityValidationExpression: ^Bearer [-0-9a-zA-z\.]*$
             resultTtlInSeconds: 0
+  assignAppToAllTenantUsers:
+    handler: apps/tenant/assign.handler
+    events:
+      - http:
+          path: apps/{appId}/tenants/{tenant}
+          method: put
+          cors: true
+          authorizer:
+            name: oktaAuth
+            identityValidationExpression: ^Bearer [-0-9a-zA-z\.]*$
+            resultTtlInSeconds: 0            
   # Idps
   getIdp:
     handler: idps/get.handler
