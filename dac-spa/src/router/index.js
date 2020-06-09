@@ -11,6 +11,7 @@ import Tenants from "@/components/Tenants";
 import Users from "@/components/Users";
 import Tokens from "@/components/Tokens";
 import Settings from "@/components/Settings";
+import TenantApps from "@/components/TenantApps";
 import config from '@/.config.js'
 
 Vue.use(Router)
@@ -74,6 +75,15 @@ const router = new Router({
             }
         },
         {
+            path: '/apps',
+            name: 'tenantApps',
+            component: TenantApps,
+            meta: {
+                title: "TenantApps",
+                requiresAuth: true
+            }
+        },        
+        {
             path: '/tenants',
             name: 'tenants',
             component: Tenants,
@@ -81,25 +91,7 @@ const router = new Router({
                 title: "Tenants",
                 requiresAuth: true
             }
-        },
-        // {
-        //     path: '/app-master',
-        //     name: 'app-master',
-        //     component: AppMaster,
-        //     meta: {
-        //         title: "AppMaster",
-        //         requiresAuth: true
-        //     }
-        // },
-        // {
-        //     path: '/apps',
-        //     name: 'apps',
-        //     component: Applications,
-        //     meta: {
-        //         title: "Applications",
-        //         requiresAuth: true
-        //     }
-        // },        
+        },      
     ]
 })
 

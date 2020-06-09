@@ -22,7 +22,6 @@
                         class="ma-2"
                         outlined
                         >
-
                         <v-overlay absolute :value="app.loading">
                             <v-progress-circular
                                 indeterminate
@@ -32,38 +31,26 @@
                             ></v-progress-circular>                            
                         </v-overlay>
 
-                        <div class="d-flex flex-no-wrap justify-space-between">
-                            <div>
-                                <div class="d-inline-flex ml-4">
-                                    <v-checkbox
-                                        dense
-                                        v-model="app.profile.appFlag"
-                                        @mouseup="app.loading = true; updateOnKeyup(app);"
-                                        >
-                                    </v-checkbox>
-                                    <v-card-title class="headline" v-text="app.name"></v-card-title>
-                                </div>
-                            </div>
-                            <v-avatar
-                                class="ma-4"
-                                size="40"
+                        <v-list-item three-line>
+                            <v-list-item-title class="headline mb-1" v-text="app.name"></v-list-item-title>
+                            <v-list-item-avatar
                                 tile
-                            >                    
-                                <v-img 
-                                    :src="app.profile.avatar"
-                                    :aspect-ratio="1"
-                                ></v-img>
-                            </v-avatar>
-                        </div>
-                        <!-- <v-card-text>
-                            <v-text-field
-                                v-model="app.profile.imageUrl"
-                                label="Image URL"
-                                v-on:keyup="updateOnKeyup(app)"
                                 >
-                            </v-text-field>                    
-                        </v-card-text> -->
-
+                                <v-img 
+                                    :src="app.logo"
+                                    :aspect-ratio="1"
+                                ></v-img>                                    
+                            </v-list-item-avatar>                                
+                        </v-list-item>
+                        <v-card-text>
+                            <div class="overline mb-4">Settings</div>
+                            <v-checkbox
+                                dense
+                                label="Assign to All Users"
+                                v-model="app.allUsers"
+                                @mouseup="app.loading = true; assignOnKeyup(app);"
+                            ></v-checkbox>   
+                        </v-card-text>
                     </v-card>
                 </v-col>
             </v-row>
@@ -75,13 +62,14 @@
 import axios from "axios";
 
 export default {
-    name: 'app-master',
+    name: 'tenant-apps',
     data() {
         return {
             loading: false,
             apps: [],
             message: null,
-            typingDelayTimer: null
+            typingDelayTimer: null,
+            tenant: null
         }
     },
     async created() {
@@ -89,24 +77,22 @@ export default {
     },
     methods: {
         async init() {
+            const claims = await this.$authn.getClaims();
+            this.tenant = claims.tenants[0].split(':')[1];
+
             this.loading = true;
             try {
                 const accessToken = await this.$authn.getAccessToken();
                 const res = await axios.get(
-                    this.$config.api + '/apps/all',
+                    this.$config.api + '/apps',
                     { headers: { Authorization: "Bearer " + accessToken } }
                 );
                 this.apps = res.data.filter((app) => { 
                         return app.name
                     }).map(app=>{
-                    if (!app.profile) {
-                        app.profile = {
-                            appFlag: false,
-                            avatar: app.logo[0].href
-                        }
-                    }
-                    //console.log("app", app.profile)
+                    app.logo = app.logo[0].href;
                     app.loading = false;
+                    app.allUsers = app.settings ? app.settings.allUsers : false;
                     return app;
                 });
             } catch (e) {
@@ -114,19 +100,20 @@ export default {
             }
             this.loading = false;
         },
-        updateOnKeyup(app) {
+        assignOnKeyup(app) {
             const self = this;
             if (this.typingDelayTimer) {
                 clearTimeout(this.typingDelayTimer);
             }
+
             this.typingDelayTimer = setTimeout(
                 async function() {
                     app.loading = true;
                     try {
                         const accessToken = await self.$auth.getAccessToken();
                         const res = await axios.put(
-                            self.$config.api + '/apps/' + app.id,
-                            { profile: app.profile },
+                            self.$config.api + '/tenants/' + self.tenant + '/apps/' + app.id,
+                            { allUsers: app.allUsers ? 'true' : 'false' },
                             { headers: { Authorization: "Bearer " + accessToken } }
                         )
                     } catch (e) {

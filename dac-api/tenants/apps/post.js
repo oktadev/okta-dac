@@ -69,6 +69,34 @@ module.exports.handler = async (event, context) => {
         }
     }
 
+    async function assignGroupToApp(appId, tenant) {
+        try {
+            const usersGroup = await lib.getUsersGroup(tenant);
+
+            const res = await lib.axios.put(
+                lib.orgUrl + '/api/v1/apps/' + appId + '/groups/' + usersGroup.data.id, {},
+                lib.headers
+            );
+            return res;
+        } catch (e) {
+            throw e;
+        }
+    }
+
+    async function unassignGroupToApp(appId, tenant) {
+        try {
+            const usersGroup = await lib.getUsersGroup(tenant);
+
+            const res = await lib.axios.delete(
+                lib.orgUrl + '/api/v1/apps/' + appId + '/groups/' + usersGroup.data.id,
+                lib.headers
+            );
+            return res;
+        } catch (e) {
+            throw e;
+        }
+    }
+
     const response = {
         isBase64Encoded: false,
         headers: {
@@ -76,7 +104,24 @@ module.exports.handler = async (event, context) => {
         }
     };
     try {
-        const res = await assignTenantApp(event.pathParameters.tenant, event.pathParameters.appId);
+        let res = undefined;
+        if (event.body) {
+            const payload = JSON.parse(event.body);
+            if (payload.allUsers && payload.allUsers == 'true') {
+                res = await assignGroupToApp(
+                    event.pathParameters.appId, 
+                    event.pathParameters.tenant
+                );        
+            } else if (payload.allUsers && payload.allUsers == 'false') {
+                res = await unassignGroupToApp(
+                    event.pathParameters.appId, 
+                    event.pathParameters.tenant
+                );
+            }
+        }
+        if (!res) {
+            res = await assignTenantApp(event.pathParameters.tenant, event.pathParameters.appId);
+        }
         response.statusCode = res.status;
         response.body = JSON.stringify(res.data);
     } catch (e) {

@@ -112,6 +112,11 @@ export default {
           icon: "mdi-account-cog",
           route: "settings",
         },
+        {
+          title: this.$t("Apps"),
+          icon: "mdi-apps",
+          route: "apps",
+        },        
       ],
       suItems: [
         { title: this.$t("home"), icon: "mdi-home-city", route: "/" },

@@ -55,7 +55,14 @@ export default {
                     icon: "cog-outline",
                     flex: 6,
                     route: "settings"
-                }
+                },
+                {
+                    name: this.$t("Apps"),
+                    subtitle: "",
+                    icon: "apps",
+                    flex: 6,
+                    route: "apps"
+                }                
             ]
         };
     },

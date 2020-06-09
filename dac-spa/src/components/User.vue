@@ -286,7 +286,9 @@ export default {
                     assigned.push(parts[2]);
             }
             this.apps.forEach(app=>{
-                app.on = assigned.includes(app.id);
+                console.log(app);
+                app.on = assigned.includes(app.id) || app.settings.allUsers === true;
+                app.allUsers = app.settings.allUsers;
             });
         },
         async validate_email_on_keyup() {

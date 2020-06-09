@@ -19,11 +19,6 @@ module.exports.handler = (event, context) => {
         stage: apiGatewayArnPart[1]
     };
     
-    console.log(arnParts);
-    // // path must start with {stage}/admin/api/v1
-    // // if (apiGatewayArnPart[3] != 'admin' || apiGatewayArnPart[4] != 'api' || apiGatewayArnPart[5] != 'v1') {
-    // //     return context.fail('Unauthorized');
-    // // }
     const proxyPath = arnParts[5].split('/')[3];
     // passthrough the o4o token:
     if (requiresAccessToken.findIndex(resource => { return proxyPath === resource }) < 0) {
@@ -43,18 +38,22 @@ module.exports.handler = (event, context) => {
         policy.allowMethod(AuthPolicy.HttpVerb.GET, "apps");
         policy.allowMethod(AuthPolicy.HttpVerb.GET, "apps/*");
 
-        // Tenant admins can read/manage their own idp settings
         const tenants = jwt.claims.tenants;
         if (tenants && tenants.length > 0) {
             policy.allowMethod(AuthPolicy.HttpVerb.GET, 'idps');
             tenants.forEach((tenant)=>{
                 const parts = tenant.split(':');
+
+                // Tenant Admins can read/manage their own idp settings
                 policy.allowMethod(AuthPolicy.HttpVerb.GET, 'idps/' + parts[0]);
                 policy.allowMethod(AuthPolicy.HttpVerb.GET, 'idps/' + parts[0] + '/metadata.xml');
                 policy.allowMethod(AuthPolicy.HttpVerb.PUT, 'idps/' + parts[0]);
+
+                // Tenant Admins can assign all tenant users to app
+                policy.allowMethod(AuthPolicy.HttpVerb.GET, 'tenants/' + parts[1]);
+                policy.allowMethod(AuthPolicy.HttpVerb.PUT, 'tenants/' + parts[1] + '/apps/*');
             });            
         }
-
         if (jwt.claims.groups && jwt.claims.groups.includes('SUPERUSERS')) {
             // Only superusers can read/add tenants
             policy.allowMethod(AuthPolicy.HttpVerb.GET, "tenants");
@@ -86,7 +85,7 @@ module.exports.handler = (event, context) => {
             tenants: JSON.stringify(tenants),
             groups: JSON.stringify(jwt.claims.groups)
         }
-        console.log(JSON.stringify(builtPolicy));
+        console.log(builtPolicy.policyDocument.Statement);
         return context.succeed(builtPolicy);
     })
     .catch((err) => {

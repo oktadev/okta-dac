@@ -55,7 +55,8 @@
                                 </v-card>
                             </template>
                             <v-card flat color="transparent" class="mx-auto">
-                                <div class="white--text caption">Click to {{app.on ? deactivate : activate}}</div>
+                                <div v-if="app.allUsers" class="white--text caption">Always Assigned</div>                                
+                                <div v-else class="white--text caption">Click to {{app.on ? deactivate : activate}}</div>
                             </v-card>
                         </v-tooltip>
                     </v-col>
@@ -98,6 +99,8 @@ export default {
     },
     methods: {      
         async activateDeactivate(app) {
+            if (app.allUsers) return;
+            
             this.loadingApps = true;
             let token = undefined;
             try {
