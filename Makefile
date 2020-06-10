@@ -7,6 +7,7 @@ help:
 	@echo "Usage:\n\tmake okta\n\tmake api\n\tmake spa"
 	@echo "\tmake all
 
+NPM_VERSION := $(shell npm -v 2>/dev/null)
 TERRAFORM_VERSION := $(shell terraform --version 2>/dev/null)
 SERVERLESS_VERSION := $(shell serverless -v 2>/dev/null)
 AWSCLI_VERSION := $(shell aws --version 2>/dev/null)
@@ -28,6 +29,11 @@ ifdef AWSCLI_VERSION
 	@echo "Found $(AWSCLI_VERSION)"
 else
 	@echo "'aws' CLI not found. Please see: https://docs.idp.rocks/setup/#install-aws-cli for details. "
+endif
+ifdef NPM_VERSION
+	@echo "Found npm $(NPM_VERSION)"
+else
+	@echo "'npm' not found. Please see: https://docs.idp.rocks/setup/#install-npm for details. "
 endif
 ifdef TFVAR_EXISTS
 	@echo "Found terraform.tfvars"
@@ -106,7 +112,8 @@ setupSpa: createVueEnv
 
 .PHONY: spa
 spa: setupSpa
-	echo "Run 'npm run serve'"
+	@echo "Run 'npm run serve' to run Single Page App locally. " && \
+	echo "\tThen go to http://localhost:8080/ in your browser."
 
 #   Experimental - for CloudFront, S3, Route53 setup in AWS for the SPA
 #	@cd ${SPA_DIR} && \

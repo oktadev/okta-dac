@@ -25,7 +25,7 @@
 
         <v-list-item v-for="item in menuItems" :key="item.title" link>
           <v-list-item-icon>
-            <v-icon>{{ item.icon }}</v-icon>
+            <v-icon color="primary">{{ item.icon }}</v-icon>
           </v-list-item-icon>
 
           <router-link :to="item.route" class="no-deco white--text">
@@ -108,15 +108,15 @@ export default {
           route: "users",
         },
         {
-          title: this.$t("settings"),
-          icon: "mdi-account-cog",
-          route: "settings",
-        },
-        {
           title: this.$t("Apps"),
           icon: "mdi-apps",
           route: "apps",
-        },        
+        },         
+        {
+          title: this.$t("settings"),
+          icon: "mdi-account-cog",
+          route: "settings",
+        },       
       ],
       suItems: [
         { title: this.$t("home"), icon: "mdi-home-city", route: "/" },
