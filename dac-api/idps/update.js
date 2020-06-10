@@ -19,7 +19,7 @@ module.exports.handler = async (event, context) => {
         }
         try {
             payload.protocol.credentials.trust.kid = kid;
-            if (!payload.name.startsWith('MTA_')) payload.name = 'MTA_' + payload.name;
+            if (!payload.name.startsWith(lib.DAC_PREFIX)) payload.name = lib.DAC_PREFIX + payload.name;
 
             const res = await lib.axios.put(lib.orgUrl + '/api/v1/idps/' + id, payload, lib.headers);
             result.status = res.status;

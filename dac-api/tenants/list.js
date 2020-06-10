@@ -11,12 +11,12 @@ module.exports.handler = async (event, context) => {
                 return {
                     status: 200,
                     data: res.data.filter(idp => {
-                            return idp.name.startsWith('MTA_');
+                            return idp.name.startsWith(lib.DAC_PREFIX);
                         })
                         .map(idp => {
                             return {
                                 id: idp.id,
-                                name: idp.name.split('MTA_')[1].split('_')[0],
+                                name: idp.name.split(lib.DAC_PREFIX)[1].split('_')[0],
                                 created: idp.created
                             };
                         }),

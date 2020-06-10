@@ -24,7 +24,7 @@ async function getTenantApps(tenant, claims) {
                     return {
                         id: app.id,
                         APPUSERS_groupId: app.groupId,
-                        name: app.label.split('MTA_')[1],
+                        name: app.label.split(lib.DAC_PREFIX)[1],
                         created: app.created,
                         lastUpdated: app.lastUpdated,
                         logo: app._links.logo,

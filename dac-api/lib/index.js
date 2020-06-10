@@ -1,6 +1,7 @@
 const standardResponses = require ('./standardResponses.js')
 const axios = require('axios');
 const orgUrl = process.env.ISSUER.split("/oauth2")[0];
+const DAC_PREFIX = process.env.RESERVED_PREFIX + '_';
 const headers = {
     headers: {
         Authorization: 'SSWS ' + process.env.OKTA_API_KEY
@@ -75,7 +76,7 @@ async function addGroupAdminTarget(groupId, roleId, targetId) {
 }
 
 module.exports = {
-    orgUrl, headers, axios, standardResponses, 
+    orgUrl, headers, axios, standardResponses, DAC_PREFIX,
     getAdminsGroup, 
     getUsersGroup,
     addKey, 

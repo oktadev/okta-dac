@@ -6,7 +6,7 @@ async function getIdp(id) {
     try {
         const res = await lib.axios.get(lib.orgUrl + '/api/v1/idps/' + id, lib.headers);
         result.data = res.data;
-        result.data.name = result.data.name.split('MTA_')[1];
+        result.data.name = result.data.name.split(lib.DAC_PREFIX)[1];
         delete result.data._links.metadata;
         delete result.data._links.users;
         delete result.data._links.deactivate;

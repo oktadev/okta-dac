@@ -31,6 +31,7 @@ provider:
     TEMPLATE_CERT: ${self:custom.env.TEMPLATE_CERT}
     IDP_DISCO_POLICY_ID: ${self:custom.env.IDP_DISCO_POLICY_ID}
     DNS_VERIFY_PREFIX: ${self:custom.env.DNS_VERIFY_PREFIX}
+    RESERVED_PREFIX: ${self:custom.env.RESERVED_PREFIX}
 
 functions:
   # Authorizer

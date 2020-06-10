@@ -32,52 +32,52 @@ module.exports.handler = (event, context) => {
     oktaJwtVerifier.verifyAccessToken(accessTokenString, process.env.AUD)
     .then((jwt) => {
         const policy = new AuthPolicy(jwt.claims.sub, awsAccountId, apiOptions);
-        
 
         // Everyone can read apps
-        policy.allowMethod(AuthPolicy.HttpVerb.GET, "apps");
-        policy.allowMethod(AuthPolicy.HttpVerb.GET, "apps/*");
+        policy.allowMethod(AuthPolicy.HttpVerb.GET, 'apps');
+        policy.allowMethod(AuthPolicy.HttpVerb.GET, 'apps/*');
 
         const tenants = jwt.claims.tenants;
         if (tenants && tenants.length > 0) {
             policy.allowMethod(AuthPolicy.HttpVerb.GET, 'idps');
             tenants.forEach((tenant)=>{
                 const parts = tenant.split(':');
-
-                // Tenant Admins can read/manage their own idp settings
+                // Tenant Admins can read and update their own idp settings
                 policy.allowMethod(AuthPolicy.HttpVerb.GET, 'idps/' + parts[0]);
                 policy.allowMethod(AuthPolicy.HttpVerb.GET, 'idps/' + parts[0] + '/metadata.xml');
-                policy.allowMethod(AuthPolicy.HttpVerb.PUT, 'idps/' + parts[0]);
+                policy.allowMethod(AuthPolicy.HttpVerb.PUT, 'idps/' + parts[0]);   
 
-                // Tenant Admins can assign all tenant users to app
+                // Read own tenants     
                 policy.allowMethod(AuthPolicy.HttpVerb.GET, 'tenants/' + parts[1]);
-                policy.allowMethod(AuthPolicy.HttpVerb.PUT, 'tenants/' + parts[1] + '/apps/*');
+                policy.allowMethod(AuthPolicy.HttpVerb.GET, 'tenants/' + parts[1] + '/domains');
+                policy.allowMethod(AuthPolicy.HttpVerb.GET, 'tenants/' + parts[1] + '/domains/*');
+
+                policy.allowMethod(AuthPolicy.HttpVerb.PUT, 'tenants/' + parts[1] + '/admins/*');    // Assign Tenant Admins
+                policy.allowMethod(AuthPolicy.HttpVerb.POST, 'tenants/' + parts[1] + '/domains');    // Register Tenant Domains
+                policy.allowMethod(AuthPolicy.HttpVerb.PUT, 'tenants/' + parts[1] + '/domains/*');   // Verify Tenant Domains
+                policy.allowMethod(AuthPolicy.HttpVerb.DELETE,'tenants/' + parts[1] + '/domains/*'); // De-register Tenant Domains
+                policy.allowMethod(AuthPolicy.HttpVerb.PUT, 'tenants/' + parts[1] + '/apps/*');      // Assign all tenant users to app                
             });            
         }
         if (jwt.claims.groups && jwt.claims.groups.includes('SUPERUSERS')) {
             // Only superusers can read/add tenants
-            policy.allowMethod(AuthPolicy.HttpVerb.GET, "tenants");
-            policy.allowMethod(AuthPolicy.HttpVerb.POST, "tenants");
-            policy.allowMethod(AuthPolicy.HttpVerb.ALL, "tenants/*");
-
-            // read admins
-            policy.allowMethod(AuthPolicy.HttpVerb.GET, "org/*");
-
-            // update app profile
-            policy.allowMethod(AuthPolicy.HttpVerb.PUT, "apps/*");
-        } else {
-            jwt.claims.groups.forEach(grp=>{
-                if (grp.startsWith('ADMINS_')) {
-                    policy.allowMethod(AuthPolicy.HttpVerb.GET, "tenants/" + grp.split('_')[1]);
-                    policy.allowMethod(AuthPolicy.HttpVerb.PUT, "tenants/" + grp.split('_')[1] + "/admins/*");
-                    policy.allowMethod(AuthPolicy.HttpVerb.GET, "tenants/" + grp.split('_')[1] + "/domains");
-                    policy.allowMethod(AuthPolicy.HttpVerb.GET, "tenants/" + grp.split('_')[1] + "/domains/*");
-                    policy.allowMethod(AuthPolicy.HttpVerb.POST, "tenants/" + grp.split('_')[1] + "/domains");
-                    policy.allowMethod(AuthPolicy.HttpVerb.PUT, "tenants/" + grp.split('_')[1] + "/domains/*");
-                    policy.allowMethod(AuthPolicy.HttpVerb.DELETE, "tenants/" + grp.split('_')[1] + "/domains/*");
-                }
-            });
-        }
+            policy.allowMethod(AuthPolicy.HttpVerb.GET, 'tenants');
+            policy.allowMethod(AuthPolicy.HttpVerb.POST, 'tenants');
+            policy.allowMethod(AuthPolicy.HttpVerb.ALL, 'tenants/*');
+        } 
+        // else {
+        //     jwt.claims.groups.forEach(grp=>{
+        //         if (grp.startsWith('ADMINS_')) {
+        //             policy.allowMethod(AuthPolicy.HttpVerb.GET, "tenants/" + grp.split('_')[1]);
+        //             policy.allowMethod(AuthPolicy.HttpVerb.PUT, "tenants/" + grp.split('_')[1] + "/admins/*");
+        //             policy.allowMethod(AuthPolicy.HttpVerb.GET, "tenants/" + grp.split('_')[1] + "/domains");
+        //             policy.allowMethod(AuthPolicy.HttpVerb.GET, "tenants/" + grp.split('_')[1] + "/domains/*");
+        //             policy.allowMethod(AuthPolicy.HttpVerb.POST, "tenants/" + grp.split('_')[1] + "/domains");
+        //             policy.allowMethod(AuthPolicy.HttpVerb.PUT, "tenants/" + grp.split('_')[1] + "/domains/*");
+        //             policy.allowMethod(AuthPolicy.HttpVerb.DELETE, "tenants/" + grp.split('_')[1] + "/domains/*");
+        //         }
+        //     });
+        // }
 
         let builtPolicy = policy.build();
         builtPolicy.context = {
@@ -85,6 +85,8 @@ module.exports.handler = (event, context) => {
             tenants: JSON.stringify(tenants),
             groups: JSON.stringify(jwt.claims.groups)
         }
+
+        console.log(JSON.stringify(builtPolicy));
         console.log(builtPolicy.policyDocument.Statement);
         return context.succeed(builtPolicy);
     })

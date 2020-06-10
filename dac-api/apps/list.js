@@ -13,7 +13,7 @@ module.exports.handler = async (event, context) => {
                 const url = lib.orgUrl + '/api/v1/apps';
                 res = await lib.axios.get(url, lib.headers);
                 filtered = res.data.filter(app => {
-                    return (app.label.startsWith('MTA_'));
+                    return (app.label.startsWith(lib.DAC_PREFIX));
                 });
             } else {
                 const tenants = JSON.parse(claims.tenants);
@@ -34,7 +34,7 @@ module.exports.handler = async (event, context) => {
             return {
                 id: app.id,
                 APPUSERS_groupId: app.APPUSERS_groupId,
-                name: app.label ? app.label.split('MTA_')[1] : app.name,
+                name: app.label ? app.label.split(lib.DAC_PREFIX)[1] : app.name,
                 created: app.created,
                 lastUpdated: app.lastUpdated,
                 logo: app.logo ? app.logo : app._links.logo,

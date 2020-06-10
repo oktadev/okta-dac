@@ -64,7 +64,7 @@ async function addTenantDomain(tenant, requestPayload, obj) {
             const rule = await lib.axios.post(
                 lib.orgUrl + '/api/v1/policies/' + process.env.IDP_DISCO_POLICY_ID + '/rules' + activate, {
                     type: "IDP_DISCOVERY",
-                    name: "MTA_" + tenant + (requestPayload.verified ? "" : "_unverified"),
+                    name: lib.DAC_PREFIX + tenant + (requestPayload.verified ? "" : "_unverified"),
                     actions: {
                         idp: {
                             providers: [{

@@ -97,7 +97,7 @@ module.exports.handler = async (event, context) => {
             const res = await lib.axios.post(
                 lib.orgUrl + '/api/v1/idps', {
                     type: "SAML2",
-                    name: 'MTA_' + name,
+                    name: lib.DAC_PREFIX + name,
                     status: "ACTIVE",
                     protocol: {
                         type: "SAML2",

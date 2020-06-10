@@ -77,13 +77,20 @@ module.exports.handler = async (event, context) => {
                 lib.orgUrl + '/api/v1/apps/' + appId + '/groups/' + usersGroup.data.id, {},
                 lib.headers
             );
-            return res;
+            return {
+                status: res.status,
+                data: {
+                    tenant: tenant,
+                    appId: appId,
+                    lastUpdated: res.data.lastUpdated
+                }
+            };            
         } catch (e) {
             throw e;
         }
     }
 
-    async function unassignGroupToApp(appId, tenant) {
+    async function unassignGroupFromApp(appId, tenant) {
         try {
             const usersGroup = await lib.getUsersGroup(tenant);
 
@@ -91,7 +98,14 @@ module.exports.handler = async (event, context) => {
                 lib.orgUrl + '/api/v1/apps/' + appId + '/groups/' + usersGroup.data.id,
                 lib.headers
             );
-            return res;
+            return {
+                status: 200,
+                data: {
+                    tenant: tenant,
+                    appId: appId,
+                    lastUpdated: res.data.lastUpdated
+                }
+            };
         } catch (e) {
             throw e;
         }
@@ -113,7 +127,7 @@ module.exports.handler = async (event, context) => {
                     event.pathParameters.tenant
                 );        
             } else if (payload.allUsers && payload.allUsers == 'false') {
-                res = await unassignGroupToApp(
+                res = await unassignGroupFromApp(
                     event.pathParameters.appId, 
                     event.pathParameters.tenant
                 );
