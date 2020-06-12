@@ -15,7 +15,7 @@ okta.delete.tfplan
 # local env files
 .env.local
 .env.*.local
-*.env.*
+.env.json
 
 # Log files
 npm-debug.log*

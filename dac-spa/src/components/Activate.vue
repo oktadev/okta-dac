@@ -9,7 +9,7 @@
                 size="80"
                 height="20"
                 color="white"
-                ></v-progress-circular>
+            ></v-progress-circular>
         </v-overlay>
         <v-form ref="form" v-model="valid" v-if="!invalidToken">
             <v-card-text class="d-flex justify-center">Please Create Your Account</v-card-text>
@@ -97,7 +97,7 @@ export default {
                 return "Invalid Token";
             } else {
                 return this.profile
-                    ? "Welcome to Workday, " + this.profile.firstName
+                    ? "Welcome, " + this.profile.firstName
                     : "";
             }
         }
@@ -146,7 +146,7 @@ export default {
             );
             if (res.status == 200) {
                 const oktaAuth = new AuthJS({
-                    url: this.$config.oidc.issuer.split("/oauth2/")[0]
+                    issuer: this.$config.oidc.issuer.split("/oauth2/")[0]
                 });
                 const self = this;
                 oktaAuth
@@ -159,7 +159,7 @@ export default {
                             sessionToken: transaction.sessionToken
                         });
                     })
-                    .fail(function(err) {
+                    .catch(function(err) {
                         console.error(err);
                     });
             }

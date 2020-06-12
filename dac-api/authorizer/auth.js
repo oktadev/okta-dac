@@ -9,7 +9,6 @@ const oktaJwtVerifier = new OktaJwtVerifier({
 const requiresAccessToken = ['idps', 'tenants', 'admins', 'apps'];
 
 module.exports.handler = (event, context) => {
-    console.log("using authroizer")
     const arnParts = event.methodArn.split(':');
     const apiGatewayArnPart = arnParts[5].split('/');
     const awsAccountId = arnParts[4];
@@ -27,6 +26,9 @@ module.exports.handler = (event, context) => {
         return context.succeed(policy.build());
     }
 
+    if (!event.authorizationToken) {
+        return context.fail("Unauthorized");
+    }
     const accessTokenString = event.authorizationToken.split(' ')[1];
 
     oktaJwtVerifier.verifyAccessToken(accessTokenString, process.env.AUD)

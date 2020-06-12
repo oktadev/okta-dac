@@ -286,7 +286,6 @@ export default {
                     assigned.push(parts[2]);
             }
             this.apps.forEach(app=>{
-                console.log(app);
                 app.on = assigned.includes(app.id) || app.settings.allUsers === true;
                 app.allUsers = app.settings.allUsers;
             });

@@ -131,8 +131,7 @@ export default {
                             "okta.apps.read"
                         ]
                     });
-                    const accessToken = res.filter(token => { return token.accessToken; })[0];
-
+                    const accessToken = res.tokens.accessToken;
                     // vuex
                     this.$store.commit("setO4oToken", accessToken.accessToken);
                     this.$store.subscribe((mutation, state) => { console.log("Got mutation", mutation.type); });

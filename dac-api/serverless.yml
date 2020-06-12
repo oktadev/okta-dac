@@ -13,16 +13,16 @@ plugins:
   - serverless-offline
 
 custom:
-  env: ${file(./${self:provider.stage}.env.json)}  
-  region: ${opt:region, self:provider.region}
-  stage: ${opt:stage, self:provider.stage}
+  env: ${file(./.env.json)}
+  region: ${self:provider.region}
+  stage: ${self:provider.stage}
 
 provider:
   name: aws
-  runtime: nodejs10.x
-  profile: dac-serverless-admin
-  region: us-east-2
-  stage: dev
+  runtime: nodejs12.x
+  profile: ${self:custom.env.AWS_PROFILE}
+  region: ${self:custom.env.AWS_REGION}
+  stage: ${self:custom.env.ENVIRONMENT}
   environment:
     ISSUER: ${self:custom.env.ISSUER}
     AUD: ${self:custom.env.AUDIENCE}
