@@ -20,8 +20,8 @@ custom:
 provider:
   name: aws
   runtime: nodejs10.x
-  profile: dac-serverless-admin
-  region: us-east-2
+  profile: serverless-okta
+  region: us-east-1
   stage: dev
   environment:
     ISSUER: ${self:custom.env.ISSUER}
