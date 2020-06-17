@@ -1,8 +1,32 @@
-## Project setup
+# Single Page Application (Local Installation)
 
-```sh
-npm install
-```
+## Prerequisites
+* Install [vuecli](https://cli.vuejs.org/#getting-started)
+
+   e.g. via npm:
+
+   ```
+   npm install @vue/cli -g
+   ```
+
+   Note: if you get WARN/ERR on MacOS, run:
+
+   ```
+   sudo npm install -g @vue/cli --unsafe-perm
+   ```
+
+## Make
+1. Use the provided Makefile to generate the local env file using outputs from previous makes. From the `/okta-dac` (root) folder (that contains the Makefile), run
+    ```
+    make spa
+    ```
+    This generates the `.env.development.local` file in the `/okta-dac` folder and populates it with the necessary values.
+
+2. Then, compile for development environment. `cd` into the `/okta-dac` folder and run
+    ```
+    npm run serve
+    ```
+3. Open your browser to `http://localhost:8080` and login
 
 ## Manual Setup
 **If you prefer not to use the makefile, then follow these steps:**
