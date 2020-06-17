@@ -76,7 +76,7 @@ destroyOkta: destroyOktaPlan
 .PHONY: createEnvJson
 createEnvJson: 
 	@cd ${TERRAFORM} && \
-	terraform output api_env_json > ../${API_DIR}/dev.env.json
+	terraform output api_env_json > ../${API_DIR}/.env.json
 
 .PHONY: setupApi
 setupApi: createEnvJson
@@ -115,6 +115,9 @@ spa: setupSpa
 	@echo "Run 'npm run serve' to run Single Page App locally. " && \
 	echo "\tThen go to http://localhost:8080/ in your browser."
 
+# ========================================================================
+# TODO: Make deploy SPA.
+# ========================================================================
 #   Experimental - for CloudFront, S3, Route53 setup in AWS for the SPA
 #	@cd ${SPA_DIR} && \
 #	serverless deploy -v
@@ -124,3 +127,16 @@ removeSpa:
 	@cd ${SPA_DIR} && \
 	serverless remove -v && \
 	rm -rf node_modules dist
+
+.PHONY: dacOkta
+dacOkta: okta
+	@echo "1. Terraform Okta Complete"
+	@echo "2. Env variables for API written to AWS Systems Manager"
+
+.PHONY: dacApi
+dacApi: dacOkta
+	@echo "Now Deploying Serverless..."
+
+.PHONY: all
+all: dacApi
+	@echo "Make complete."

@@ -14,24 +14,24 @@ plugins:
 
 custom:
   env: ${file(./.env.json)}
-  region: ${self:provider.region}
-  stage: ${self:provider.stage}
+  ssmPrefix: ${self:custom.env.AWS_SSM_PREFIX}
 
 provider:
   name: aws
   runtime: nodejs12.x
-  profile: ${self:custom.env.AWS_PROFILE}
-  region: ${self:custom.env.AWS_REGION}
-  stage: ${self:custom.env.ENVIRONMENT}
+  profile: ${self:custom.env.AWS_PROFILE} # This should match what's in /terraform/terraform.tfvars
+  region: ${self:custom.env.AWS_REGION}   # This should match what's in /terraform/terraform.tfvars
+  stage: ${self:custom.env.ENVIRONMENT}   # This should match what's in /terraform/terraform.tfvars
   environment:
-    ISSUER: ${self:custom.env.ISSUER}
-    AUD: ${self:custom.env.AUDIENCE}
-    OKTA_API_KEY: ${self:custom.env.OKTA_API_KEY}
-    CLIENT_ID: ${self:custom.env.CLIENT_ID}
-    TEMPLATE_CERT: ${self:custom.env.TEMPLATE_CERT}
-    IDP_DISCO_POLICY_ID: ${self:custom.env.IDP_DISCO_POLICY_ID}
-    DNS_VERIFY_PREFIX: ${self:custom.env.DNS_VERIFY_PREFIX}
-    RESERVED_PREFIX: ${self:custom.env.RESERVED_PREFIX}
+    ISSUER: ${ssm:/${self:custom.ssmPrefix}/okta/${self:provider.stage}/issuer-uri}
+    AUDIENCE: ${ssm:/${self:custom.ssmPrefix}/okta/${self:provider.stage}/audience}
+    CLIENT_ID: ${ssm:/${self:custom.ssmPrefix}/okta/${self:provider.stage}/client-id}
+    OKTA_API_KEY: ${ssm:/${self:custom.ssmPrefix}/okta/${self:provider.stage}/api-token~true}
+
+    TEMPLATE_CERT: ${ssm:/${self:custom.ssmPrefix}/okta/${self:provider.stage}/dummy-cert}
+    IDP_DISCO_POLICY_ID: ${ssm:/${self:custom.ssmPrefix}/okta/${self:provider.stage}/okta-idp-disco-policyId}
+    DNS_VERIFY_PREFIX: ${ssm:/${self:custom.ssmPrefix}/okta/${self:provider.stage}/dns-verify-prefix}
+    RESERVED_PREFIX: ${ssm:/${self:custom.ssmPrefix}/okta/${self:provider.stage}/dac-prefix}
 
 functions:
   # Authorizer

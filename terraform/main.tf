@@ -12,7 +12,11 @@ provider "okta" {
 
 # Local variables
 locals {
-  app_name = "dac-admin"
+  app_name = "okta-dac"
+}
+
+variable "sleep" {
+  default = 6
 }
 
 # dac Users - Everyone 
@@ -150,8 +154,19 @@ resource "okta_auth_server_claim" "okta-dac-groups-id" {
   scopes            = [okta_auth_server_scope.okta-dac.name]
 }
 
+# insert a delay
+resource "null_resource" "waitForPolicy" {
+  provisioner "local-exec" {
+    command = "sleep ${var.sleep}"
+  }
+  triggers = {
+    "before" = "${okta_auth_server_policy.okta-dac.id}"
+  }
+}
+
 # Create policy rule in custom authorization server
 resource "okta_auth_server_policy_rule" "okta-dac" {
+  depends_on                    = ["null_resource.waitForPolicy"]
   auth_server_id                = okta_auth_server.okta-dac.id
   policy_id                     = okta_auth_server_policy.okta-dac.id
   status                        = "ACTIVE"
@@ -164,6 +179,7 @@ resource "okta_auth_server_policy_rule" "okta-dac" {
 }
 
 resource "okta_auth_server_policy_rule" "okta-dac-catch-all" {
+  depends_on                    = ["null_resource.waitForPolicy"]
   auth_server_id                = okta_auth_server.okta-dac.id
   policy_id                     = okta_auth_server_policy.okta-dac.id
   status                        = "ACTIVE"

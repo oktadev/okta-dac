@@ -31,7 +31,7 @@ module.exports.handler = (event, context) => {
     }
     const accessTokenString = event.authorizationToken.split(' ')[1];
 
-    oktaJwtVerifier.verifyAccessToken(accessTokenString, process.env.AUD)
+    oktaJwtVerifier.verifyAccessToken(accessTokenString, process.env.AUDIENCE)
     .then((jwt) => {
         const policy = new AuthPolicy(jwt.claims.sub, awsAccountId, apiOptions);
 

@@ -127,8 +127,7 @@ export default {
                         scopes: [
                             "openid",
                             "okta.users.manage",
-                            "okta.groups.manage",
-                            "okta.apps.read"
+                            "okta.groups.manage"
                         ]
                     });
                     const accessToken = res.tokens.accessToken;
