@@ -1,6 +1,6 @@
 ## Project setup
 
-```
+```sh
 npm install
 ```
 
@@ -40,18 +40,21 @@ npm install
 This project uses Okta routing rules (idp discovery) by default. Due to known scaling limitations, it is advisable to not use the okta idp discovery functionality if expecting 1000s of inbound IdPs. If you anticipate a large number of inbound federation with idp-discovery, then: 
 * Deploy the [okta-dac-domains-serverless](https://github.com/udplabs/okta-dac-domains-serverless) microservice instead.
 * Add the following setting in the `.env` file:
-```
+
+```sh
 VUE_APP_USE_WEBFINGER_PLUGIN=true
 VUE_APP_WEBFINGER_PLUGIN=<<url of the microservice>>
 ```
+
 This setting will use the microservice for storing domains, unverified domains (for domain verification) and idp-discovery functionality.
 
 ## Stylesheet options
 
-Add a file `.env.local` (in the root directory) with these contents: 
+Add a file `.env.local` (in the root directory) with these contents:
 
 **Values below are for example purposes**
-```
+
+```sh
 # Styling Information
 VUE_APP_LOGO=https://cdn.freelogovectors.net/wp-content/uploads/2018/05/workday-logo-icon.png
 VUE_APP_MAINCOLOR=#ffa126
