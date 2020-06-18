@@ -81,9 +81,9 @@
         <v-btn @click="logout">Logout</v-btn>
       </div>
     </v-app-bar>
-    <v-content>
+    <v-main>
       <router-view />
-    </v-content>
+    </v-main>
   </v-app>
 </template>
 

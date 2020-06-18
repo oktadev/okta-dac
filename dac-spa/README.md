@@ -61,7 +61,7 @@
 
 ## Webfinger and Domain Verification Plugin
 
-This project uses Okta routing rules (idp discovery) by default. Due to known scaling limitations, it is advisable to not use the okta idp discovery functionality if expecting 1000s of inbound IdPs. If you anticipate a large number of inbound federation with idp-discovery, then: 
+This project uses Okta routing rules (idp discovery) by default. Due to known scaling limitations, it is advisable to not use the okta idp discovery functionality if expecting 10,000s of inbound IdPs (1000s are fine). If you anticipate an extremely large number of inbound federation with idp-discovery, then: 
 * Deploy the [okta-dac-domains-serverless](https://github.com/udplabs/okta-dac-domains-serverless) microservice instead.
 * Add the following setting in the `.env` file:
 
