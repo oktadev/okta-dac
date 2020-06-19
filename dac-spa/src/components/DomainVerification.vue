@@ -24,6 +24,7 @@
                                         v-model="domainName"
                                         v-on:keydown="validating=true"
                                         v-on:keyup="validate_domain_on_keyup(domainName)"
+                                        :rules="domainNameRules"
                                         :error-messages="duplicateDomainFound"
                                     ></v-text-field>
                                 </v-col>
@@ -126,7 +127,10 @@ export default {
             validating: false,
             duplicateDomainFound: undefined,
             typingDelayTimer: undefined,
-            waiting: false
+            waiting: false,
+            domainNameRules: [
+                v => /(?=^.{4,253}$)(^((?!-)[a-zA-Z0-9-]{1,63}(?<!-)\.)+[a-zA-Z]{2,63}$)/.test(v) || "Valid domain name, e.g. example.com"
+            ]
         };
     },
     props: {

@@ -114,7 +114,7 @@ Terraform currently does not support granting Okta API Scopes. These are require
 ```
 npm run serve
 ```
-The, open your browser to `http://localhost:8080` and login
+Then, open your browser to `http://localhost:8080` and login
 
 ---
 

@@ -61,6 +61,7 @@
                                 dense
                                 hide-details="auto"
                                 v-model="input"
+                                :rules="domainNameRules"
                                 :error-messages="duplicateDomainFound"
                                 :disabled="saving"
                             ></v-text-field>
@@ -136,7 +137,10 @@ export default {
             validating: false,
             typingDelayTimer: undefined,
             duplicateDomainFound: undefined,
-            dialog: false
+            dialog: false,
+            domainNameRules: [
+                v => /(?=^.{4,253}$)(^((?!-)[a-zA-Z0-9-]{1,63}(?<!-)\.)+[a-zA-Z]{2,63}$)/.test(v) || "Valid domain name, e.g. example.com"
+            ]
         };
     },
     computed: {

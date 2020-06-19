@@ -52,7 +52,7 @@ module.exports.handler = async (event, context) => {
         }
     }
     
-    async function updateTenantJitGroup(id, groupId) {
+    async function updateTenantJitGroupAndInactivate(id, groupId) {
         try {
             const res = await lib.axios.get(lib.orgUrl + '/api/v1/idps/' + id, lib.headers);
             let payload = res.data;
@@ -62,6 +62,7 @@ module.exports.handler = async (event, context) => {
             delete payload.lastUpdated;
             payload.policy.provisioning.groups.action = 'ASSIGN';
             payload.policy.provisioning.groups.assignments = [groupId];
+            payload.status = 'INACTIVE';
             const res2 = await lib.axios.put(lib.orgUrl + '/api/v1/idps/' + id, payload, lib.headers);
             return res2;
         } catch (e) {
@@ -98,7 +99,7 @@ module.exports.handler = async (event, context) => {
                 lib.orgUrl + '/api/v1/idps', {
                     type: "SAML2",
                     name: lib.DAC_PREFIX + name,
-                    status: "ACTIVE",
+                    status: "INACTIVE",
                     protocol: {
                         type: "SAML2",
                         endpoints: {
@@ -145,7 +146,7 @@ module.exports.handler = async (event, context) => {
                 await lib.addGroupAdminTarget(admins.data.id, role.data.id, allUsers.data.id);
                 await lib.addGroupAdminTarget(admins.data.id, role.data.id, admins.data.id);
                 await assignGroupToApp(admins.data.id, res.data.id, name, allUsers.data.id);
-                await updateTenantJitGroup(res.data.id, allUsers.data.id);
+                await updateTenantJitGroupAndInactivate(res.data.id, allUsers.data.id);
     
                 return {
                     status: 201,

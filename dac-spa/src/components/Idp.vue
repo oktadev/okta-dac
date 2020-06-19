@@ -6,6 +6,14 @@
         <v-alert class="mt-1" :type="alertType" dense text dismissible v-model="alert">{{alertMessage}}</v-alert>
         <v-container class="mx-auto py-0">
             <v-row no-gutters>
+                <!-- <v-col cols="12"> -->
+                    <v-switch
+                        v-model="idpActive"
+                        :label="idpActive ? 'Active' : 'Inactive'"
+                    ></v-switch>
+                <!-- </v-col> -->
+            </v-row>
+            <v-row no-gutters>
                 <v-col lg="12" md="12" sm="12">
                     <v-tabs horizontal>
                         <v-tab key="general">SAML</v-tab>
@@ -212,7 +220,7 @@
                     <v-btn
                         color="primary"
                         :disabled="!ready || !valid || saving"
-                        @click="update"
+                        @click="update(true)"
                     >Update</v-btn>
                 </v-col>
             </v-row>
@@ -236,6 +244,7 @@ export default {
     data() {
         return {
             idp: false,
+            idpActive: false,
             valid: true,
             saving: false,
             processingCert: false,
@@ -248,6 +257,13 @@ export default {
             ready: false,
             advanced: false,
             fields: {
+                idpStatus: {
+                    label: "Status",
+                    select: [
+                        "ACTIVE",
+                        "INACTIVE"
+                    ]
+                },
                 idpIssuerUri: {
                     label: "IdP Issuer URI",
                     help:
@@ -411,7 +427,8 @@ export default {
     watch: {
         checkboxSignAssertion: "setResponseScope",
         clockSkewValue: "setMaxClockSkew",
-        skewValueType: "setMaxClockSkew"
+        skewValueType: "setMaxClockSkew",
+        idpActive: "toggleState"
     },
     async created() {
         await this.init();
@@ -430,6 +447,7 @@ export default {
 
             if (res.data) {
                 this.idp = res.data;
+                this.idpActive = this.idp.status === 'ACTIVE' ? true: false;
                 delete this.idp.id;
                 delete this.idp.created;
                 delete this.idp.lastUpdated;
@@ -474,7 +492,14 @@ export default {
             }
             this.ready = true;
         },
-        async update() {
+        async toggleState() {
+            const status = this.idpActive ? 'ACTIVE' : 'INACTIVE';
+            if (status !== this.idp.status) {
+                this.idp.status = status;
+                await this.update(false);
+            }
+        },
+        async update(alert) {
             this.alert = false;
             this.saving = true;
             if (this.x5c.length > 0) this.idp.x5c = this.x5c;
@@ -494,8 +519,13 @@ export default {
                     { headers: { Authorization: "Bearer " + accessToken } }
                 );
                 this.alert = true;
-                this.alertMessage = 'Successfully Updated Configuration';
-                this.alertType = 'success';
+                if (alert) {
+                    this.alertMessage = 'Successfully Updated Configuration';
+                    this.alertType = 'success';
+                } else {
+                    this.alertMessage = this.idp.status === 'ACTIVE' ? 'Activated' : 'Inactivated';
+                    this.alertType = this.idp.status === 'ACTIVE' ? 'success' : 'warning';
+                }
             } catch (e) {
                 this.alert = true;
                 this.alertMessage = 'Status: ' + e.status + '. Unable to Update Configuration';
