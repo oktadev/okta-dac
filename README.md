@@ -1,17 +1,36 @@
-ℹ️ Disclaimer: This project serves as a Sample Application, that you can tweak or completely repurpose. It is community-supported and is maintained by members of the Okta team for developers and other IT professionals. DAC is not an official Okta product and does not qualify for any Okta support. Okta makes no warranties regarding this project. Anyone who chooses to use this project must ensure that their implementation meets any applicable legal obligations including any Okta terms and conditions.
+ℹ️ Disclaimer: This project serves as a Sample Application, that you can tweak or completely repurpose. It is community-supported and is maintained by members of the Okta team for developers and other IT professionals. okta-dac is not an official Okta product and does not qualify for any Okta support. Okta makes no warranties regarding this project. Anyone who chooses to use this project must ensure that their implementation meets any applicable legal obligations including any Okta terms and conditions.
 
 ℹ️ It is recommended that you collaborate with your preferred Okta Solution Provider [(link)](https://www.okta.com/partners/meet-our-partners/?field_partner_type_tid=8101&field_solutions_target_id=6061) to implement and adapt this app code sample within your existing portal. This app features frontend and backend components and like any web app hosted and running on your side, you should perform a code review, as well as security and scalability tests.
 
 # DAC 
-__Delegated Admin Console__
+## Introduction
+
+This Sample Application demonstrates best practices for architecting multitenancy over a single Okta Org. 
+
+For a deep-dive into the architecture, refer to the documentation [here](https://docs.idp.rocks/).
+
+## TL;DR
+
+When building a multitenant application, one key challenge is to build out functionality to manage user identities in each tenant, while segregating the administration to the tenants themselves in a self-service manner. Fortunately, Okta has many great features that support this scenario. In __okta-dac__, you will find sample implementation of key identity management functionality (for multitenant applications), which include:
+* A "Super Admin" UI – accessible to users having a "Super Admin role" – that provides a overarching view of all tenants. Among its functions, the Super Admin UI allows you to:
+    * List all and add new tenants
+    * Select applications that a tenant gets access to
+    * Define the username domain(s) for the tenant(s). Usernames are confined to specific domains, so that usernames in one tenant do not collide with those from another (in our implementation of this sample multitenant app, the same username cannot exist in multiple tenants). Domains are also used to automatically configure routing-rules for idp-discovery functionality in the [byob-dashboard](https://github.com/oktadeveloper/byob-dashboard) companion app.
+* A "Tenant Admin" UI – accessible to users having a "Tenant Admin role" – that provides the following functionality:
+    * Manage users in the tenant (Add users, update users, manage user statuses, etc.)
+    * Assign apps to individual users
+    * Assign apps "en-masse"
+    * Self configure inbound SAML to the tenant
+    * Self verify domain names
+
 
 ![alt text](images/dac-demo.gif)
 
-This project is built in Vue.js and uses
-
-- [Vuetify 2.x](https://vuetifyjs.com/en/) Material Design Component Framework
-- [Okta Vue.js SDK](https://github.com/okta/okta-oidc-js/tree/master/packages/okta-vue)
-- [Okta Sign-in Widget](https://github.com/okta/okta-signin-widget)
+* The SPA is built in Vue.js and uses
+    - [Vuetify 2.x](https://vuetifyjs.com/en/) Material Design Component Framework
+    - [Okta Vue.js SDK 2.0.x](https://github.com/okta/okta-oidc-js/tree/master/packages/okta-vue)
+    - [Okta Sign-in Widget 4.1.x](https://github.com/okta/okta-signin-widget)
+* The API is developed using [Serverless](https://www.serverless.com/) framework
 
 ## Setup
 
@@ -100,7 +119,8 @@ The above will:
 
 If you didn't see any errors during `make`, you're *almost* ready to go. But there is one manual step to complete:
 
-## (Required) Manual Step
+## (Required) Manual Steps
+### Manual Step #1
 Terraform currently does not support granting Okta API Scopes. These are required for okta-dac to properly function.
 
 ![alt text](images/okta-api-scopes.png)
@@ -108,6 +128,17 @@ Terraform currently does not support granting Okta API Scopes. These are require
 2. Navigate to the **Okta API Scopes** tab and Grant the following scopes:
     * `okta.groups.manage`
     * `okta.users.manage`
+
+### Manual Step #2
+__okta-dac__ implements a custom user welcome page. Update the __User Activation__ email template to send new users to this page instead of the Okta branded Welcome Wizard.
+
+Terraform does not currently support updating email templates, so perform these manually: 
+
+* Replace `${activationLink}` (screenshot below) with `http://localhost:8080/activate/${activationToken}` 
+* If you're also running [byob-dashboard](https://github.com/oktadeveloper/byob-dashboard) do this instead (because users should be sent to the byob-dashboard): 
+    * Replace `${activationLink}` with `http://localhost:8081/activate/${activationToken}` (adjust the port or *Base url*, as appropriate)
+
+![alt text](./images/user-activation-email.png)
 
 ## Run
 `cd` into the `dac-spa` folder and run
