@@ -117,7 +117,7 @@ The above will:
 2. Deploy the API using Serverless
 3. Create the local env file (`.env.development.local`) for the SPA
 
-If you didn't see any errors during `make`, you're *almost* ready to go. But there is one manual step to complete:
+If you didn't see any errors during `make`, you're *almost* ready to go. But there are a couple manual steps to complete:
 
 ## (Required) Manual Steps
 ### Manual Step #1
