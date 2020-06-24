@@ -11,7 +11,7 @@ For a deep-dive into the architecture, refer to the documentation [here](https:/
 
 ## TL;DR
 
-When building a multitenant application, one key challenge is to build out functionality to manage user identities in each tenant, while segregating the administration to the tenants themselves in a self-service manner. Fortunately, Okta has many great features that support this scenario. In __okta-dac__, you will find sample implementation of key identity management functionality (for multitenant applications), which include:
+When building a multitenant application, one key challenge is to build out functionality to manage user identities in each tenant, while segregating the administration of the tenants themselves in a self-service manner. Fortunately, Okta has many great features that support this scenario. In __okta-dac__, you will find sample implementation of key identity management functionality (for multitenant applications), which include:
 * A "Super Admin" UI – accessible to users having a "Super Admin role" – that provides a overarching view of all tenants. Among its functions, the Super Admin UI allows you to:
     * List all and add new tenants
     * Select applications that a tenant gets access to
