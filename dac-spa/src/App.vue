@@ -101,7 +101,6 @@ export default {
       superuserFlag: false,
       items: [
         { title: this.$t("home"), icon: "mdi-home-city", route: "/" },
-        // { title: this.$t("apps"), icon: "mdi-apps", route: "app-master" },
         {
           title: this.$t("users"),
           icon: "mdi-account-group-outline",
@@ -120,7 +119,6 @@ export default {
       ],
       suItems: [
         { title: this.$t("home"), icon: "mdi-home-city", route: "/" },
-        // { title: this.$t("apps"), icon: "mdi-apps", route: "app-master" },
         { title: this.$t("tenants"), icon: "mdi-domain", route: "tenants" },
       ],
     };
@@ -139,7 +137,6 @@ export default {
       return this.user ? this.user.name : "";
     },
     gravatar() {
-      //console.log("Gravatar", JSON.stringify(this.user));
       return this.user
         ? "https://www.gravatar.com/avatar/" + md5(this.user.preferred_username)
         : "";
@@ -196,10 +193,7 @@ export default {
     },
     async logout() {
       await this.$auth.logout();
-      await this.isAuthenticated();
-
       this.$store.commit("logout");
-      this.$router.push("/login");
     },
     routeTo(route) {
       const token = this.$store.state.o4oToken;

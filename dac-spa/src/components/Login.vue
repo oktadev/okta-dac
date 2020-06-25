@@ -20,8 +20,7 @@ export default {
         clientId: this.$config.oidc.client_id,
         redirectUri: this.$config.oidc.redirect_uri,
         authParams: {
-          responseType: "code",
-          grantType: "authorization_code",
+          pkce: true,
           issuer: this.$config.oidc.issuer,
           scopes: this.$config.oidc.scope.split(" "),
           display: "page"
