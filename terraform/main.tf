@@ -190,3 +190,31 @@ resource "okta_auth_server_policy_rule" "okta-dac-catch-all" {
   group_whitelist               = [data.okta_group.dac-users.id]
   access_token_lifetime_minutes = 60
 }
+
+# Change the welcome email template
+resource "okta_template_email" "email-welcome" {
+  type = "email.welcome"
+
+  translations {
+    language = "en"
+    subject  = "Welcome to DAC"
+    template = "<div style=\"background-color:#fafafa;margin:0\"> \n  <table style=\"font-family:'proxima nova' , 'century gothic' , 'arial' , 'verdana' , sans-serif;font-size:14px;color:#5e5e5e;width:98%;max-width:600px;float:none;margin:0 auto\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" valign=\"top\" align=\"left\">\n    <tbody>\n      <tr bgcolor=\"#ffffff\">\n        <td> \n          <table bgcolor=\"#ffffff\" style=\"width:100%;line-height:20px;padding:32px;border:1px solid;border-color:#f0f0f0\" cellpadding=\"0\">\n            <tbody>\n              <tr>\n                <td style=\"padding-top:24px;vertical-align:bottom\"> Hi $${f:escapeHtml(user.firstName)}, </td>\n              </tr>\n              <tr>\n                <td style=\"padding-top:24px\"> <strong>Welcome to DAC</strong> <br/> Click the following link to activate your account:</strong> </td>\n              </tr>\n              <tr>\n                <td align=\"center\" style=\"border:none;padding:25px 0 0 0\"> \n                  <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" valign=\"top\">\n                    <tbody>\n                      <tr>\n                        <td align=\"center\" style=\"display:inline-block;padding:10px;border:1px solid;text-align:center;cursor:pointer;color:#fff;border-radius:3px;background-color:#44bc98;border-color:#328c71 #328c71 #2f856b;box-shadow:#d8d8d8 0 1px 0\"> <a id=\"reset-password-link\" href=\"http://localhost:8080/activate/$${activationToken}\" style=\"text-decoration:none\"> <span style=\"font-size:13.5px;color:#fff\"> Activate Account </span> </a> </td>\n                      </tr>\n                      <tr>\n                        <td align=\"center\" style=\"color:#999\"> This link expires in $${f:formatTimeDiffHoursNowInUserLocale(org.activationTokenExpirationHours)}. </td>\n                      </tr>\n                    </tbody>\n                  </table> </td>\n              </tr>\n              <tr>\n                <td style=\"padding-top:24px\"> Your username is <strong>$${user.login}</strong></td>\n              </tr>\n            </tbody>\n          </table> </td>\n      </tr>\n      <tr>\n        <td style=\"font-size:12px;padding:16px 0 30px 50px;color:#999\"> This is an automatically generated message from <a href=\"http://www.okta.com\" style=\"color:rgb( 97 , 97 , 97 )\">Okta</a>. Replies are not monitored or answered. </td>\n      </tr>\n    </tbody>\n  </table> \n</div>"
+  }
+}
+
+
+# A dummy app so that we can grab the Okta cert for TEMPLATE_CERT env variable
+resource okta_app_saml dac-dummy-saml {
+  label                    = "dac-dummy-saml"
+  sso_url                  = "http://example.com"
+  recipient                = "http://example.com"
+  destination              = "http://example.com"
+  audience                 = "http://example.com/audience"
+  subject_name_id_template = "$${user.userName}"
+  subject_name_id_format   = "urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress"
+  response_signed          = true
+  signature_algorithm      = "RSA_SHA256"
+  digest_algorithm         = "SHA256"
+  honor_force_authn        = false
+  authn_context_class_ref  = "urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport"
+}

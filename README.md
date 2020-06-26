@@ -117,28 +117,16 @@ The above will:
 2. Deploy the API using Serverless
 3. Create the local env file (`.env.development.local`) for the SPA
 
-If you didn't see any errors during `make`, you're *almost* ready to go. But there are a couple manual steps to complete:
+If you didn't see any errors during `make`, you're *almost* ready to go. But there is one manual step to complete:
 
-## (Required) Manual Steps
-### Manual Step #1
-Terraform currently does not support granting Okta API Scopes. These are required for okta-dac to properly function.
+## (Required) Manual Step
+Terraform currently does not support granting Okta API Scopes. These scopes are required for okta-dac to properly function.
 
 ![alt text](images/okta-api-scopes.png)
 1. Login to your Org's Admin Console. Search for the `okta-dac` app
 2. Navigate to the **Okta API Scopes** tab and Grant the following scopes:
     * `okta.groups.manage`
     * `okta.users.manage`
-
-### Manual Step #2
-__okta-dac__ implements a custom user welcome page. Update the __User Activation__ email template to send new users to this page instead of the Okta branded Welcome Wizard.
-
-Terraform does not currently support updating email templates, so perform these manually: 
-
-* Replace `${activationLink}` (screenshot below) with `http://localhost:8080/activate/${activationToken}` 
-* If you're also running [byob-dashboard](https://github.com/oktadeveloper/byob-dashboard) do this instead (because users should be sent to the byob-dashboard): 
-    * Replace `${activationLink}` with `http://localhost:8081/activate/${activationToken}` (adjust the port or *Base url*, as appropriate)
-
-![alt text](./images/user-activation-email.png)
 
 ## Run
 `cd` into the `dac-spa` folder and run
