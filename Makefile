@@ -59,7 +59,7 @@ planOkta:
 .PHONY: okta
 okta: planOkta
 	@cd ${TERRAFORM} && \
-	terraform apply -auto-approve okta.setup.tfplan && \
+	terraform apply -parallelism=1 -auto-approve okta.setup.tfplan && \
 	terraform output
 
 .PHONY: destroyOktaPlan
