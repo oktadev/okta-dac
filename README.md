@@ -46,9 +46,6 @@ Setting up the required configurations in Okta; the API Gateway and lambda funct
 3. Install [Serverless](https://www.serverless.com/framework/docs/getting-started/)
 
    e.g. via npm:
-   
-   cd to the /byob-dashboard folder and run:
-
    ```
    npm install -g serverless
    ```
