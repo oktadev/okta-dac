@@ -86,7 +86,7 @@ Setting up the required configurations in Okta; the API Gateway and lambda funct
     base_url          = "<oktapreview.com || okta.com>"
     api_token         = "<OKTA_API_TOKEN>"
     app_url           = "http://localhost:8080"
-    superuser_email   = ""
+    superuser_login   = ""
     environment       = "dev"
     aws_region        = "us-east-1"
     aws_profile       = "(see Prerequisites Step 5.)"
@@ -101,7 +101,7 @@ Setting up the required configurations in Okta; the API Gateway and lambda funct
     | base_url              | Base URL for the Okta org (okta.com or oktapreview.com)                    | "okta.com"              |
     | api_token             | OKTA_API_TOKEN, per [Prerequisites Step 6.](#prerequisites)                |                         |
     | app_url               | Base URL for the SPA.                                                      | "http://localhost:8080" |
-    | superuser_email       | Enter the Super Admin email/username you use to login to your Org          |                         |
+    | superuser_login       | Enter the Super Admin username you use to login to your Org          |                         |
     | environment           | Stage configured in API Gateway (dev, prod, ...)                           | "dev"                   |
     | aws_region            | Region to deploy AWS components.                                           | "us-east-1"             |
     | aws_profile           | Profile configured in AWS CLI. per [Prerequisites Step 5.](#prerequisites) |                         |

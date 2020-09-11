@@ -26,12 +26,11 @@ data "okta_group" "dac-users" {
 
 data "okta_user" "dac-superuser" {
   search {
-    name  = "profile.email"
-    value = var.superuser_email
+    name  = "profile.login"
+    value = var.superuser_login
   }
 }
 
-# dac Users - Everyone 
 resource "okta_group" "dac-superusers" {
   name = "SUPERUSERS"
 

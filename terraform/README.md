@@ -17,9 +17,10 @@ This application is represented by an OpenID Connect application in Okta, so we 
     ```
 
 * **(Optional)** Or, if you prefer not to use the Makefile, follow these steps.
-    1. `cd` into the `/terraform` folder, then run
-    2. `terraform init && terraform plan -out=okta.setup.tfplan -lock=false`
-    3. `terraform apply -auto-approve okta.setup.tfplan`
+    1. `cd` into the `/terraform` folder
+    2. Setup the `tfvars` file per [these](https://github.com/oktadeveloper/okta-dac#environment-variables) instructions, then run
+    3. `terraform init && terraform plan -out=okta.setup.tfplan -lock=false`
+    4. `terraform apply -auto-approve okta.setup.tfplan`
 
 #### (Required) Manual Step
 Terraform currently does not support granting Okta API Scopes. These are required for okta-dac to properly function.

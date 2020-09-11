@@ -12,7 +12,7 @@ variable "base_url" {
 variable "app_url" {
 }
 
-variable "superuser_email" {
+variable "superuser_login" {
 
 }
 
