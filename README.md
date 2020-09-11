@@ -2,10 +2,11 @@
 
 ℹ️ It is recommended that you collaborate with your preferred Okta Solution Provider [(link)](https://www.okta.com/partners/meet-our-partners/?field_partner_type_tid=8101&field_solutions_target_id=6061) to implement and adapt this app code sample within your existing portal. This app features frontend and backend components and like any web app hosted and running on your side, you should perform a code review, as well as security and scalability tests.
 
-# DAC 
+# DAC
+
 ## Introduction
 
-This Sample Application demonstrates best practices for architecting multitenancy over a single Okta Org. 
+This Sample Application demonstrates best practices for architecting multitenancy over a single Okta Org.
 
 For a deep-dive into the architecture, refer to the documentation [here](https://docs.idp.rocks/).
 
@@ -38,7 +39,11 @@ Setting up the required configurations in Okta; the API Gateway and lambda funct
 
 ### Prerequisites
 
-1. **macOS Catalina issues:** You must be able to run `npm install`. 
+- Terraform == `v0.13.x`
+- NPM >= `6.12.x`
+- Serveless >= `1.75.x`
+
+1. **macOS Catalina issues:** You must be able to run `npm install`.
     * The Makefiles runs `npm install` commands. You should make sure that your machine is able to run this command without any issues.
     * If you are getting the error *"gyp: No Xcode or CLT version detected!"* on macOS Catalina, [follow these steps](https://medium.com/flawless-app-stories/gyp-no-xcode-or-clt-version-detected-macos-catalina-anansewaa-38b536389e8d)
 
@@ -139,4 +144,3 @@ If you would rather do things step by step, do not run `make all`. Deploying thi
 1. Run the provided Terraform scripts. Click [here](terraform#okta-setup) for next steps.
 2. Deploy the API. Click [here](dac-api#serverless) for next steps.
 3. Bring up the spa on localhost. Click [here](dac-spa#make) for next steps.
-
