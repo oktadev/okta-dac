@@ -58,7 +58,13 @@ module.exports.handler = (event, context) => {
                 policy.allowMethod(AuthPolicy.HttpVerb.POST, 'tenants/' + parts[1] + '/domains');    // Register Tenant Domains
                 policy.allowMethod(AuthPolicy.HttpVerb.PUT, 'tenants/' + parts[1] + '/domains/*');   // Verify Tenant Domains
                 policy.allowMethod(AuthPolicy.HttpVerb.DELETE,'tenants/' + parts[1] + '/domains/*'); // De-register Tenant Domains
-                policy.allowMethod(AuthPolicy.HttpVerb.PUT, 'tenants/' + parts[1] + '/apps/*');      // Assign all tenant users to app                
+                policy.allowMethod(AuthPolicy.HttpVerb.PUT, 'tenants/' + parts[1] + '/apps/*');      // Assign all tenant users to app  
+                
+                policy.allowMethod(AuthPolicy.HttpVerb.GET, 'tenants/' + parts[1] + '/clients');      // List Tenant Clients
+                policy.allowMethod(AuthPolicy.HttpVerb.GET, 'tenants/' + parts[1] + '/clients/*');      // Get Tenant Clients Details
+                policy.allowMethod(AuthPolicy.HttpVerb.POST, 'tenants/' + parts[1] + '/clients');    // Register Tenant Clients
+                policy.allowMethod(AuthPolicy.HttpVerb.PUT, 'tenants/' + parts[1] + '/clients/*');    // Upddate Tenant Clients
+                policy.allowMethod(AuthPolicy.HttpVerb.DELETE,'tenants/' + parts[1] + '/clients/*'); // De-register Tenant Clients
             });            
         }
         if (jwt.claims.groups && jwt.claims.groups.includes('SUPERUSERS')) {
