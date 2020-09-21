@@ -13,7 +13,8 @@ const store = new Vuex.Store({
     state: {
         o4oToken: "",
         activeTenant: "",
-        verifiedDomains: []
+        verifiedDomains: [],
+        tenants: [],
     },
     getters: {
         o4oToken: state => {
@@ -30,11 +31,9 @@ const store = new Vuex.Store({
             //         return "";
             //     }
             // }
-            console.log("Vuex: gettters.o4oToken", state.o4oToken);
             return state.o4oToken;
         },
         activeTenant: state => {
-            console.log("Vuex: gettters.activeTenant", state.activeTenant);
             return state.activeTenant;
         },
         o4oJWT: state => {
@@ -42,12 +41,14 @@ const store = new Vuex.Store({
         },
         verifiedDomains: state => {
             return state.verifiedDomains;
+        },
+        tenants: (state) => {
+          return state.tenants;
         }
     },
     mutations: {
         RESTORE_MUTATION: vuexLocal.RESTORE_MUTATION,
         setO4oToken: (state, payload) => {
-            console.log("vuex: mutations.setO4oToken", payload);
             state.o4oToken = payload;
         },
         logout: (state, payload) => {
@@ -56,7 +57,7 @@ const store = new Vuex.Store({
         },
         setActiveTenant: (state, payload) => {
             console.log("vuex: mutations.setActiveTenant", payload);
-            state.activeTenant = payload.name;
+            state.activeTenant = payload;
         },
         setVerifiedDomains: (state, payload) => {
             if (!state.verifiedDomains) state.verifiedDomains = [payload];
@@ -65,11 +66,13 @@ const store = new Vuex.Store({
             });
             if (index >= 0) state.verifiedDomains[index] = payload;
             else state.verifiedDomains.push(payload);
-        }
+        },
+        setTenants: (state, payload) => {
+          state.tenants = payload;
+        },
     },
     actions: {
         setO4oToken: ({commit}, payload) => {
-            //console.log("Updating o4o token", payload);
             commit('setO4oToken', payload);
             // Renew token somewhere here
         },
