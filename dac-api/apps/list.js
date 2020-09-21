@@ -4,7 +4,7 @@ const getTenantApps = require('../tenants/apps/list.js');
 
 module.exports.handler = async (event, context) => {
     
-    async function listApps(claims) {
+    async function listApps(claims, activeTenant) {
         let res = undefined;
         let filtered = [];
         const groups = JSON.parse(claims.groups);
@@ -19,11 +19,16 @@ module.exports.handler = async (event, context) => {
                 const tenants = JSON.parse(claims.tenants);
                 if (tenants && tenants.length > 0) {
                     for (const tenant of tenants) {
-                        res = await getTenantApps.getTenantApps(
-                            tenant.split(':')[1],
-                            event.requestContext.authorizer
-                        );
-                        filtered = filtered.concat(res.data);
+                        console.log("activeTenant", activeTenant);
+                        let claimTenant = tenant.split(':')[1];
+                        console.log("claimTenant", claimTenant);
+                        if (!activeTenant || (activeTenant && activeTenant === claimTenant)) {
+                            res = await getTenantApps.getTenantApps(
+                                claimTenant,
+                                event.requestContext.authorizer
+                            );
+                            filtered = filtered.concat(res.data);
+                        }
                     }
                 }
             }
@@ -54,7 +59,9 @@ module.exports.handler = async (event, context) => {
         }
     };
     try {
-        const res = await listApps(event.requestContext.authorizer);
+        const res = (event.queryStringParameters && event.queryStringParameters.tenant) ?
+            await listApps(event.requestContext.authorizer, event.queryStringParameters.tenant) :
+            await listApps(event.requestContext.authorizer, null);
         response.statusCode = res.status;
         response.body = JSON.stringify(res.data);
     } catch (e) {
