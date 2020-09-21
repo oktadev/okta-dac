@@ -69,7 +69,16 @@ export default {
             apps: [],
             message: null,
             typingDelayTimer: null,
-            tenant: null
+        }
+    },
+    computed: {
+        tenant() {
+            return this.$store.getters.activeTenant;
+        }
+    },
+    watch: {
+        '$store.state.activeTenant': async function() {
+            this.loadApps();
         }
     },
     async created() {
@@ -77,14 +86,15 @@ export default {
     },
     methods: {
         async init() {
-            const claims = await this.$authn.getClaims();
-            this.tenant = claims.tenants[0].split(':')[1];
-
+            this.loadApps();
+        },
+        async loadApps() {
             this.loading = true;
             try {
+                console.log("tenant", this.tenant);
                 const accessToken = await this.$authn.getAccessToken();
                 const res = await axios.get(
-                    this.$config.api + '/apps',
+                    this.$config.api + '/apps' + (this.tenant ? '?tenant=' + this.tenant.name : ''),
                     { headers: { Authorization: "Bearer " + accessToken } }
                 );
                 this.apps = res.data.filter((app) => { 
@@ -112,7 +122,7 @@ export default {
                     try {
                         const accessToken = await self.$auth.getAccessToken();
                         const res = await axios.put(
-                            self.$config.api + '/tenants/' + self.tenant + '/apps/' + app.id,
+                            self.$config.api + '/tenants/' + self.tenant.name + '/apps/' + app.id,
                             { allUsers: app.allUsers ? 'true' : 'false' },
                             { headers: { Authorization: "Bearer " + accessToken } }
                         )
@@ -123,7 +133,6 @@ export default {
                 }
                 , 400
             )
-
         },
     }
 }

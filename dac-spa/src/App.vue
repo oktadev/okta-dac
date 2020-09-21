@@ -65,17 +65,9 @@
 
       <v-spacer></v-spacer>
 
-      <!-- <div v-if="authenticated && isTenantAdmin">
-        <v-select
-          :items="tenants"
-          :label="$t('tenant')"
-          item-text="name"
-          class="mt-6"
-          width="50"
-          dense
-          filled
-        ></v-select>
-      </div> -->
+      <div v-if="authenticated && isTenantAdmin">
+        <tenant-selector :items="tenants"></tenant-selector>
+      </div>
 
       <div class="pa-4" v-if="authenticated">
         <v-btn @click="logout">Logout</v-btn>
@@ -89,6 +81,7 @@
 
 <script>
 import md5 from "md5";
+import TenantSelector from "@/components/TenantSelector.vue";
 import AuthJS from "@okta/okta-auth-js";
 
 export default {
@@ -99,6 +92,7 @@ export default {
       authenticated: false,
       user: null,
       superuserFlag: false,
+      isTenantAdmin: false,
       items: [
         { title: this.$t("home"), icon: "mdi-home-city", route: "/" },
         {
@@ -124,11 +118,11 @@ export default {
     };
   },
   computed: {
-    activeTenant() {
-      return this.$store.getters.activeTenant;
+    o4oToken() {
+      return this.$store.getters.o4oToken;
     },
-    activeTenantLogo() {
-      return this.isTenantAdmin ? this.tenantLogo(this.activeTenant) : "";
+    tenants() {
+      return this.$store.getters.tenants;
     },
     menuItems() {
       return this.isTenantAdmin ? this.items : this.suItems;
@@ -141,18 +135,6 @@ export default {
         ? "https://www.gravatar.com/avatar/" + md5(this.user.preferred_username)
         : "";
     },
-    isTenantAdmin() {
-      return this.user
-        ? Object.prototype.hasOwnProperty.call(this.user, "tenants")
-        : false;
-    },
-    tenants() {
-      return this.isTenantAdmin
-        ? this.user.tenants.map(function(tenant) {
-            return { name: tenant.split(":")[1] };
-          })
-        : [];
-    },
     companyLogo() {
       let company =
         this.user && Object.prototype.hasOwnProperty.call(this.user, "tenants")
@@ -160,6 +142,9 @@ export default {
           : "okta";
       return "https://logo.clearbit.com/" + company + ".com";
     },
+  },
+  components: {
+    TenantSelector
   },
   async created() {
     await this.isAuthenticated();
@@ -169,21 +154,43 @@ export default {
     $route: "isAuthenticated",
   },
   methods: {
-    setActiveTenant(tenant) {
-      // Using Vuex instead
-      this.$store.commit("setActiveTenant", tenant);
-    },
+    setTenants(tenantsClaim) {
+      console.log("setting tenants", tenantsClaim)
+      let tenants = tenantsClaim.map(function(tenant) {
+        let tenantArray = tenant.split(":");
+        return {
+          idp: tenantArray[0],
+          name: tenantArray[1],
+          group: tenantArray[2],
+          //pendingGroup: tenantArray[3],
+        };
+      });
+      this.$store.commit("setTenants", tenants);
+    },    
     tenantLogo(tenantName) {
       return "https://logo.clearbit.com/" + tenantName + ".com";
     },
     async isAuthenticated() {
-      this.authenticated = await this.$auth.isAuthenticated();
-      if (this.authenticated) {
-        this.user = await this.$auth.getUser();
-        this.superuserFlag =
-          this.user.groups.findIndex((g) => {
-            return g == "SUPERUSERS";
-          }) >= 0;
+      let authIsAuthenticated = await this.$auth.isAuthenticated();
+      if (this.authenticated != authIsAuthenticated) {
+        this.authenticated = authIsAuthenticated;
+        if (this.authenticated) {
+          this.user = await this.$auth.getUser();
+          this.superuserFlag =
+            this.user.groups.findIndex((g) => {
+              return g == "SUPERUSERS";
+            }) >= 0;
+          this.isTenantAdmin = Object.prototype.hasOwnProperty.call(
+            this.user,
+            "tenants"
+          );
+          if (this.isTenantAdmin) {
+            this.setTenants(this.user.tenants);
+            this.$store.commit("setActiveTenant", this.$store.getters.tenants[0])
+          } else {
+            this.setTenants([]);
+          }
+        }
       }
     },
     home() {

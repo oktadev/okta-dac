@@ -143,7 +143,7 @@ export default {
     },
     computed: {
         o4oToken() {
-            console.log('fetching o4o token...');
+            // console.log('fetching o4o token...');
             return this.$store.getters.o4oToken;
         }
     },
@@ -155,10 +155,13 @@ export default {
             async handler() {
                 this.progressBarLoading = true;
                 // Dispatch query
-                console.log("Dispatching query...");
+                // console.log("Dispatching query...");
                 await this.loadUsers();
             },
             deep: true
+        },
+        '$store.state.activeTenant': async function() {
+            await this.getGroupStats();
         }
     },
     async created() {
@@ -241,6 +244,7 @@ export default {
                 params += `&search=${this.statusFilterString}`
             }
 
+// ' + (this.groups? 'groups/' + this.groupId: '') +'
             const res = await axios.get(this.$config.api + '/api/v1/users' + params, {
                 headers: { Authorization: "Bearer " + this.o4oToken }
             });

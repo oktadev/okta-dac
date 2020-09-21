@@ -159,6 +159,7 @@ export default {
             typingDelayTimer2: null,
             duplicateEmailFound: null,
             dupEmailValidated: false,
+            existingAdminId: null,
             o4oToken: null
         };
     },
@@ -208,19 +209,33 @@ export default {
                 );
 
                 // Step 2: Create the User in the Group associated with the Tenant
-                const r2 = await axios.post(
-                    this.$config.api + "/api/v1/users",
-                    {
-                        profile: {
-                            firstName: this.tenant.adminFN,
-                            lastName: this.tenant.adminLN,
-                            email: this.tenant.adminEmail,
-                            login: this.tenant.adminEmail
+                // Check if the user exists
+                let userId = this.existingAdminId;
+                let userProfile = this.existingAdminProfile;
+
+                if (!userId) {
+                    const r2 = await axios.post(
+                        this.$config.api + "/api/v1/users",
+                        {
+                            profile: {
+                                firstName: this.tenant.adminFN,
+                                lastName: this.tenant.adminLN,
+                                email: this.tenant.adminEmail,
+                                login: this.tenant.adminEmail
+                            },
+                            groupIds: [r1.data.USERS_groupId]
                         },
-                        groupIds: [r1.data.USERS_groupId]
-                    },
-                    { headers: { Authorization: "Bearer " + this.o4oToken } }
-                );
+                        { headers: { Authorization: "Bearer " + this.o4oToken } }
+                    );
+                    userId = r2.data.id;
+                    userProfile = r2.data.profile;
+                } else {
+                    const r3 = await axios.put(
+                        this.$config.api + `/api/v1/groups/${r1.data.USERS_groupId}/users/${userId}`,
+                        {},
+                        { headers: { Authorization: "Bearer " + this.o4oToken } }
+                    )
+                }
 
                 // Step 3: Make the user an admin of the tenant
                 const r3 = await axios.put(
@@ -228,7 +243,7 @@ export default {
                         "/tenants/" +
                         this.tenant.name +
                         "/admins/" +
-                        r2.data.id,
+                        userId,
                     null,
                     { headers: { Authorization: "Bearer " + accessToken } }
                 );
@@ -236,7 +251,7 @@ export default {
                 this.tenant.id = r1.data.id;
                 this.tenantAdmins = [
                     {
-                        profile: r2.data.profile,
+                        profile: userProfile,
                         created: r3.data.lastUpdated
                     }
                 ];
@@ -244,6 +259,8 @@ export default {
                 this.saving = false;
                 this.$emit("close");
             } catch (e) {
+                console.log("error",e);
+                console.log("error creating tenant", JSON.stringify(e));
                 this.saving = false;
             }
         },
@@ -345,8 +362,19 @@ export default {
                         self.$config.api + "/api/v1/users/" + self.tenant.adminEmail,
                         { headers: { Authorization: "Bearer " + self.o4oToken } }
                     );
-                    if (res.status == 200)
-                        self.duplicateEmailFound = "Email already exists";
+                    if (res.status == 200) {
+                        //self.duplicateEmailFound = "Email already exists. ";
+                        self.dupEmailValidated = true;
+                        // console.log("user", JSON.stringify(res.data));
+                        self.existingAdminId = res.data.id;
+                        self.existingAdminProfile = res.data.profile;
+                    } else {
+                        console.log("Status code: " + res.status);
+                        self.dupEmailValidated = true;
+                        self.existingAdminId = null;
+                        self.existingAdminProfile = null;
+                    }
+                    // console.log("existingAdminId", self.existingAdminId);
                 } catch (e) {
                     self.dupEmailValidated = true;
                 }
