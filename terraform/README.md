@@ -25,7 +25,7 @@ This application is represented by an OpenID Connect application in Okta, so we 
 #### (Required) Manual Step
 Terraform currently does not support granting Okta API Scopes. These are required for okta-dac to properly function.
 
-![alt text](../images/okta-api-scopes.png)
+![oauth scopes](../images/okta-api-scopes.png)
 1. Login to your Org's Admin Console. Search for the `okta-dac` app
 2. Navigate to the **Okta API Scopes** tab and Grant the following scopes:
     * `okta.groups.manage`

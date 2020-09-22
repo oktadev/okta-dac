@@ -25,7 +25,7 @@ When building a multitenant application, one key challenge is to build out funct
     * Self verify domain names
 
 
-![alt text](images/dac-demo.gif)
+![demo](images/dac-demo.gif)
 
 * The SPA is built in Vue.js and uses
     - [Vuetify 2.x](https://vuetifyjs.com/en/) Material Design Component Framework
@@ -46,8 +46,10 @@ Setting up the required configurations in Okta; the API Gateway and lambda funct
 1. **macOS Catalina issues:** You must be able to run `npm install`.
     * The Makefiles runs `npm install` commands. You should make sure that your machine is able to run this command without any issues.
     * If you are getting the error *"gyp: No Xcode or CLT version detected!"* on macOS Catalina, [follow these steps](https://medium.com/flawless-app-stories/gyp-no-xcode-or-clt-version-detected-macos-catalina-anansewaa-38b536389e8d)
-
-2. Install [terraform](https://learn.hashicorp.com/terraform/getting-started/install)
+2. Install [terraform v0.13.x](https://learn.hashicorp.com/terraform/getting-started/install)
+   * The terraform files uses v0.13 syntax. If you have an older version of terraform, you need to upgrade. If you can't upgrade, skip terraform and do these manual steps:
+   1. [Follow the manual steps to configure Okta](terraform#manually-configure-okta).
+   2. [Populate AWS SSM parameters](byob-api#populate-aws-ssm-parameters)
 3. Install [Serverless](https://www.serverless.com/framework/docs/getting-started/)
 
    e.g. via npm:
@@ -119,16 +121,23 @@ The above will:
 2. Deploy the API using Serverless
 3. Create the local env file (`.env.development.local`) for the SPA
 
-If you didn't see any errors during `make`, you're *almost* ready to go. But there is one manual step to complete:
+If you didn't see any errors during `make`, you're *almost* ready to go. But there are a couple manual steps to complete:
 
-## (Required) Manual Step
+## (Required) Manual Step 1
 Terraform currently does not support granting Okta API Scopes. These scopes are required for okta-dac to properly function.
 
-![alt text](images/okta-api-scopes.png)
+![oauth scopes](images/okta-api-scopes.png)
 1. Login to your Org's Admin Console. Search for the `okta-dac` app
 2. Navigate to the **Okta API Scopes** tab and Grant the following scopes:
     * `okta.groups.manage`
     * `okta.users.manage`
+
+## (Required) Manual Step 2
+Terraform currently does not support updating email templates so you have to do the following manually to get the welcome email to be redirect to the user activation path of the locally running app: `localhost:8180/activate`. 
+* Update the __User Activation__ email template: Replace `${activationLink}` with `http://localhost:8080/activate/${activationToken}` <a name="activation-email-template"></a>
+![user activation email](images/user-activation-email.png)
+
+
 
 ## Run
 `cd` into the `dac-spa` folder and run
