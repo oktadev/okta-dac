@@ -48,7 +48,7 @@
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" v-if="authenticated" />
       <v-img
         class="mx-2"
-        :src="subdomainLogo"
+        :src="$config.brand.logo_inv"
         max-height="50"
         max-width="50"
         @click="$router.push('/')"
@@ -120,9 +120,6 @@ export default {
   computed: {
     subdomain() {
       return window.location.host.split('.')[1] ? window.location.host.split('.')[0] : "honeywell";
-    },
-    subdomainLogo() {
-      return "https://logo.clearbit.com/" + this.subdomain + ".com";
     },
     propercasedSubdomain() {
       return this.subdomain.charAt(0).toUpperCase() + this.subdomain.slice(1).toLowerCase();

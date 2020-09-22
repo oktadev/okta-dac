@@ -13,6 +13,14 @@ import "@okta/okta-signin-widget/dist/css/okta-sign-in.min.css";
 
 export default {
   name: "Login",
+  computed: {
+    subdomain() {
+      return window.location.host.split('.')[1] ? window.location.host.split('.')[0] : "honeywell";
+    },
+    subdomainLogo() {
+      return "https://logo.clearbit.com/" + this.subdomain + ".com";
+    },
+  },
   mounted: function() {
     this.$nextTick(function() {
       const cfg = {
@@ -28,7 +36,7 @@ export default {
         features: {
           webauthn: true
         },
-        logo: this.$config.brand.logo,
+        logo: this.subdomainLogo,
         brandName: this.$config.brand.name,
         colors: {
           brand: this.$config.brand.color
