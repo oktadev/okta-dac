@@ -31,13 +31,13 @@
                             <v-container>
                                 <v-row>
                                     <v-col sm="12" md="12">
+                                        <!-- :error-messages="duplicateFound" -->
                                         <v-text-field 
                                             v-model="user.email" 
                                             label="Email"
                                             :rules="emailRules"
                                             required
                                             :disabled="loading"
-                                            :error-messages="duplicateFound"
                                             v-on:keyup="validate_email_on_keyup"
                                         ></v-text-field>
                                     </v-col>
@@ -206,19 +206,28 @@ export default {
                 }
 
                 const token = this.$store.state.o4oToken;
-                const res = await axios.post(
-                    url, payload, { headers: { Authorization: "Bearer " + token } }
-                );
+
+                let res = null;
+                if (!this.duplicateFound) {
+                    res = await axios.post(url, payload, { headers: { Authorization: "Bearer " + token } });
+                } else {
+                    res = await axios.get(this.$config.api + `/api/v1/users/${this.user.email}`, { headers: { Authorization: "Bearer " + token } });
+                    const r1 = await axios.put(
+                        this.$config.api + `/api/v1/groups/${this.user.groupId}/users/${res.data.id}`,
+                        {},
+                        { headers: { Authorization: "Bearer " + token } });
+                    
+                }
+                
                 this.user.status = res.data.status;
                 this.user.id = res.data.id;
                 this.linksIn = res.data._links;
 
                 if (this.user.adminFlag != this.copy.adminFlag) {
                     if (this.user.adminFlag) {
-                        const claims = await this.$auth.getUser();
                         const accessToken = await this.$authn.getAccessToken();                     
                         const res = await axios.put(
-                            this.$config.api + '/tenants/' + claims.tenants[0].split(':')[1] + '/admins/' + this.user.id,
+                            this.$config.api + '/tenants/' + this.$store.getters.activeTenant.name + '/admins/' + this.user.id,
                             null,
                             { headers: { Authorization: "Bearer " + accessToken } }
                         );
@@ -319,13 +328,18 @@ export default {
                         self.$config.api + '/api/v1/users/' + self.user.email,
                         { headers: { Authorization: "Bearer " + token } }
                     );
-                    if (!self.user.id || self.user.id.lenght <=0 || res.data.id != self.user.id) {
-                        self.duplicateFound = 'Another user with this username already exists'
+                    if (!self.user.id || self.user.id.length <=0 || res.data.id != self.user.id) {
+                        self.duplicateFound = 'Another user with this username exists';
+                        self.dupValidated = true;
+                        self.user.firstName = res.data.firstName;
+                        self.user.lastName = res.data.lastName;
                     } else {
+                        self.duplicateFound = null;
                         self.dupValidated = true;
                     }
                 } catch(e) {
                     self.dupValidated = true;
+                    self.duplicateFound = null;
                 }
             }, 700);
         },

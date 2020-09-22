@@ -48,7 +48,7 @@
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" v-if="authenticated" />
       <v-img
         class="mx-2"
-        :src="$config.brand.logo_inv"
+        :src="subdomainLogo"
         max-height="50"
         max-width="50"
         @click="$router.push('/')"
@@ -59,7 +59,7 @@
           class="font-weight-light"
           v-if="!$vuetify.breakpoint.xs"
           @click="$router.push('/')"
-          >Delegated Admin Console</span
+          >{{ propercasedSubdomain }} - Forge Admin Console</span
         >
       </v-toolbar-title>
 
@@ -118,6 +118,15 @@ export default {
     };
   },
   computed: {
+    subdomain() {
+      return window.location.host.split('.')[1] ? window.location.host.split('.')[0] : "honeywell";
+    },
+    subdomainLogo() {
+      return "https://logo.clearbit.com/" + this.subdomain + ".com";
+    },
+    propercasedSubdomain() {
+      return this.subdomain.charAt(0).toUpperCase() + this.subdomain.slice(1).toLowerCase();
+    },
     o4oToken() {
       return this.$store.getters.o4oToken;
     },
@@ -183,7 +192,7 @@ export default {
           this.isTenantAdmin = Object.prototype.hasOwnProperty.call(
             this.user,
             "tenants"
-          );
+          ) && this.user.tenants.length > 0;
           if (this.isTenantAdmin) {
             this.setTenants(this.user.tenants);
             this.$store.commit("setActiveTenant", this.$store.getters.tenants[0])
