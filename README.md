@@ -133,7 +133,7 @@ Terraform currently does not support granting Okta API Scopes. These scopes are 
     * `okta.users.manage`
 
 ## (Required) Manual Step 2
-Terraform currently does not support updating email templates so you have to do the following manually to get the welcome email to be redirect to the user activation path of the locally running app: `localhost:8180/activate`. 
+Terraform currently does not support updating email templates so you have to do the following manually to get the welcome email to be redirect to the user activation path of the locally running app: `localhost:8080/activate`. 
 * Update the __User Activation__ email template: Replace `${activationLink}` with `http://localhost:8080/activate/${activationToken}` <a name="activation-email-template"></a>
 ![user activation email](images/user-activation-email.png)
 
