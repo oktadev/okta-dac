@@ -221,7 +221,8 @@ export default {
                                 firstName: this.tenant.adminFN,
                                 lastName: this.tenant.adminLN,
                                 email: this.tenant.adminEmail,
-                                login: this.tenant.adminEmail
+                                login: this.tenant.adminEmail,
+                                default_tenant: this.tenant.name
                             },
                             groupIds: [r1.data.USERS_groupId]
                         },

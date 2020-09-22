@@ -145,6 +145,9 @@ export default {
         o4oToken() {
             // console.log('fetching o4o token...');
             return this.$store.getters.o4oToken;
+        },
+        tenant() {
+            return this.$store.getters.activeTenant;
         }
     },
     watch: {
@@ -161,7 +164,9 @@ export default {
             deep: true
         },
         '$store.state.activeTenant': async function() {
+            this.groupId = this.tenant.group;
             await this.getGroupStats();
+            await this.loadUsers();
         }
     },
     async created() {
@@ -174,9 +179,7 @@ export default {
         },
         async getGroupStats() {
             if (!this.groupId) {
-                const claims = await this.$auth.getUser();
-                this.groupId = claims.tenants[0].split(":")[2];
-                this.editedItem.groupId = this.groupId;
+                this.groupId = this.tenant.group;
             }
             const groupInfo = await axios.get(
                 this.$config.api + "/api/v1/groups/" + this.groupId + "?expand=stats",
@@ -220,6 +223,8 @@ export default {
             this.progressBarLoading = true;
             // console.log("options", JSON.stringify(this.options));
             // const { itemsPerPage } = this.options;
+
+                            // Optimization
             const { page, sortBy, sortDesc, itemsPerPage } = this.options;
             if (sortBy.length <= 0) {
                 sortBy.push(this.lastSort);
@@ -228,50 +233,78 @@ export default {
                 this.lastSort = sortBy[0];
                 this.lastSortOrder = sortDesc[0];
             }
-
             let params = '?';
             const after = this.pages[page];
             if (after) params += `after=${after}&`;
             params += `limit=${itemsPerPage}`;
             params += `&sortBy=${this.profileFields.includes(sortBy[0]) ? 'profile.' + sortBy[0] : sortBy[0]}`;
             params += `&sortOrder=${sortDesc[0] ? "desc" : "asc"}`;
+            if (!this.$store.getters.tenants.length == 1) {
+                if (this.search && this.search.length>0) {
+                    this.hideFooter = true;
+                    params += `&search=profile.firstName+sw+%22${this.search}%22+or+profile.lastName+sw+%22${this.search}%22+or+profile.login+sw+%22${this.search}%22`;
+                } else {
+                    this.hideFooter = false;
+                    params += `&search=${this.statusFilterString}`
+                }
 
-            if (this.search && this.search.length>0) {
-                this.hideFooter = true;
-                params += `&search=profile.firstName+sw+%22${this.search}%22+or+profile.lastName+sw+%22${this.search}%22+or+profile.login+sw+%22${this.search}%22`;
+                const res = await axios.get(this.$config.api + '/api/v1/users' + params, {
+                    headers: { Authorization: "Bearer " + this.o4oToken }
+                });
+                if (res.data) {
+                    this.users = res.data.map(user => {
+                        return {
+                            id: user.id,
+                            firstName: user.profile.firstName,
+                            lastName: user.profile.lastName,
+                            email: user.profile.email,
+                            status: user.status,
+                            lastLogin: user.lastLogin
+                        };
+                    });
+                    const links = res.headers.link.split(',');
+                    links.forEach(link=>{
+                        const parts = link.trim().split(';');
+                        const linkParams = this.$utils.urlParams(parts[0].split('?')[1]);
+                        if (parts[1].trim() == 'rel="next"') {
+                            this.next = linkParams.after;
+                            this.pages[page+1] = this.next;
+                        }
+                        if (parts[1].trim() == 'rel="self"') {
+                            this.curr = linkParams.after;
+                            this.pages[page] = this.curr;
+                        }
+                    });
+                }
             } else {
-                this.hideFooter = false;
-                params += `&search=${this.statusFilterString}`
-            }
-
-// ' + (this.groups? 'groups/' + this.groupId: '') +'
-            const res = await axios.get(this.$config.api + '/api/v1/users' + params, {
-                headers: { Authorization: "Bearer " + this.o4oToken }
-            });
-            if (res.data) {
-                this.users = res.data.map(user => {
-                    return {
-                        id: user.id,
-                        firstName: user.profile.firstName,
-                        lastName: user.profile.lastName,
-                        email: user.profile.email,
-                        status: user.status,
-                        lastLogin: user.lastLogin
-                    };
+                const res = await axios.get(this.$config.api + '/api/v1/groups/' + this.groupId + "/users" + params, {
+                    headers: { Authorization: "Bearer " + this.o4oToken }
                 });
-                const links = res.headers.link.split(',');
-                links.forEach(link=>{
-                    const parts = link.trim().split(';');
-                    const linkParams = this.$utils.urlParams(parts[0].split('?')[1]);
-                    if (parts[1].trim() == 'rel="next"') {
-                        this.next = linkParams.after;
-                        this.pages[page+1] = this.next;
-                    }
-                    if (parts[1].trim() == 'rel="self"') {
-                        this.curr = linkParams.after;
-                        this.pages[page] = this.curr;
-                    }
-                });
+                if (res.data) {
+                    this.users = res.data.map(user => {
+                        return {
+                            id: user.id,
+                            firstName: user.profile.firstName,
+                            lastName: user.profile.lastName,
+                            email: user.profile.email,
+                            status: user.status,
+                            lastLogin: user.lastLogin
+                        };
+                    });
+                    const links = res.headers.link.split(',');
+                    links.forEach(link=>{
+                        const parts = link.trim().split(';');
+                        const linkParams = this.$utils.urlParams(parts[0].split('?')[1]);
+                        if (parts[1].trim() == 'rel="next"') {
+                            this.next = linkParams.after;
+                            this.pages[page+1] = this.next;
+                        }
+                        if (parts[1].trim() == 'rel="self"') {
+                            this.curr = linkParams.after;
+                            this.pages[page] = this.curr;
+                        }
+                    });
+                }
             }
             this.progressBarLoading = false;
         },

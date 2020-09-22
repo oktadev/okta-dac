@@ -194,7 +194,8 @@ export default {
                         firstName: this.user.firstName,
                         lastName: this.user.lastName,
                         login: this.user.email,
-                        email: this.user.email
+                        email: this.user.email,
+                        default_tenant: this.$store.getters.activeTenant.name
                     }
                 };
                 if (this.user.id && this.user.id.length > 0) {
