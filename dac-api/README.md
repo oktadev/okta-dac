@@ -30,7 +30,7 @@ If you prefer not to use the Makefile, follow these steps:
         "AWS_SSM_PREFIX": "<aws_ssm_prefix>"
     }
     ```
-3. Populate AWS SSM parameters:
+3. Populate AWS SSM parameters: <a id="populate-aws-ssm-parameters"></a>
     * IF YOU DID RUN Terraform, SKIP THIS STEP.
     * If you did NOT not run Terraform, add the ssm parameters manually: From AWS console, navigate to **Systems Manager > Parameter Store**. Add the following parameters in your desired region:
 
