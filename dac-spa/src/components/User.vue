@@ -248,7 +248,7 @@ export default {
         async loadApps() {
             const accessToken = await this.$authn.getAccessToken();
             const res = await axios.get(
-                this.$config.api + '/apps', 
+                this.$config.api + '/apps?tenant=' + this.$store.getters.activeTenant.name, 
                 { headers: { Authorization: "Bearer " + accessToken } }
             );
             this.apps = res.data;
