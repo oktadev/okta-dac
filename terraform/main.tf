@@ -2,15 +2,6 @@
 #    Oauth2 SPA
 #    Custom authorization server for SPA
 
-# Required providers
-terraform {
-  required_providers {
-    okta = {
-      source  = "oktadeveloper/okta"
-      version = "~> 3.0"
-    }
-  }  
-}
 # Setup Okta Tenant
 provider "okta" {
   org_name  = var.org_name
@@ -185,7 +176,7 @@ resource "null_resource" "waitForPolicy" {
 
 # Create policy rule in custom authorization server
 resource "okta_auth_server_policy_rule" "okta-dac" {
-  depends_on                    = ["null_resource.waitForPolicy"]
+  depends_on                    = [null_resource.waitForPolicy]
   auth_server_id                = okta_auth_server.okta-dac.id
   policy_id                     = okta_auth_server_policy.okta-dac.id
   status                        = "ACTIVE"
@@ -198,7 +189,7 @@ resource "okta_auth_server_policy_rule" "okta-dac" {
 }
 
 resource "okta_auth_server_policy_rule" "okta-dac-catch-all" {
-  depends_on                    = ["null_resource.waitForPolicy"]
+  depends_on                    = [null_resource.waitForPolicy]
   auth_server_id                = okta_auth_server.okta-dac.id
   policy_id                     = okta_auth_server_policy.okta-dac.id
   status                        = "ACTIVE"

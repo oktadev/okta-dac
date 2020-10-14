@@ -1,13 +1,14 @@
 terraform {
   required_providers {
-    aws = {
-      source = "hashicorp/aws"
-    }
     null = {
       source = "hashicorp/null"
     }
+    aws = {
+      source = "hashicorp/aws"
+    }
     okta = {
-      source = "oktadeveloper/okta"
+      source  = "oktadeveloper/okta"
+      version = "~> 3.0"
     }
   }
   required_version = ">= 0.13"
