@@ -81,8 +81,10 @@
         <v-btn @click="logout">Logout</v-btn>
       </div>
     </v-app-bar>
+
     <v-main>
-      <router-view />
+      <ServiceMsg ref="serviceMsg"/>
+      <router-view  v-on:service-msg="onServiceMessage"/>
     </v-main>
   </v-app>
 </template>
@@ -90,6 +92,7 @@
 <script>
 import md5 from "md5";
 import AuthJS from "@okta/okta-auth-js";
+import ServiceMsg from "@/components/ServiceMsg";
 
 export default {
   name: "App",
@@ -120,7 +123,7 @@ export default {
       suItems: [
         { title: this.$t("home"), icon: "mdi-home-city", route: "/" },
         { title: this.$t("tenants"), icon: "mdi-domain", route: "tenants" },
-      ],
+      ]
     };
   },
   computed: {
@@ -164,6 +167,9 @@ export default {
   async created() {
     await this.isAuthenticated();
   },
+  components: {
+    ServiceMsg
+  },
   watch: {
     // Everytime the route changes, check for auth status
     $route: "isAuthenticated",
@@ -190,6 +196,9 @@ export default {
       this.$router.push({
         name: "home",
       });
+    },
+    onServiceMessage(e){
+      this.$refs.serviceMsg.onServiceMessage(e)
     },
     async logout() {
       await this.$auth.logout();
