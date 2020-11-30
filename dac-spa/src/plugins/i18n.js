@@ -10,7 +10,10 @@ const messages = {
     tenant: "Tenant",
     tenants: "Tenants",
     users: "Users",
-    settings: "Settings"
+    settings: "Settings",
+    errors: {
+      unableToGetSession: "Could not access Okta session to retrieve administrator access token"
+    }
   },
   es: {
     tenant: "Grupo",

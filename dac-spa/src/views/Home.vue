@@ -137,15 +137,20 @@ export default {
                 } catch (e) {
                     console.log(e);
                 }
-            }
-            if (this.$root.$children) {
-                if (this.$root.$children[0].superuserFlag) {
-                    this.homeCards = this.suCards;
+                if (this.$root.$children) {
+                    if (this.$root.$children[0].superuserFlag) {
+                        this.homeCards = this.suCards;
+                    } else {
+                        this.homeCards = this.tenantAdminCards;
+                    }
                 } else {
-                    this.homeCards = this.tenantAdminCards;
+                    this.homeCards = this.noCards;
                 }
-            } else {
-                this.homeCards = this.noCards;
+            }
+            else{
+                //no o4o token available, hide functionality
+                this.homeCards = this.homeCards = this.noCards;
+                this.$emit('service-msg',this.$t("errors.unableToGetSession"))
             }
         },
         route(route) {
