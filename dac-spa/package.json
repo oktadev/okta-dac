@@ -9,8 +9,9 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
-    "@okta/okta-signin-widget": "^4.1.2",
-    "@okta/okta-vue": "^2.0.0",
+    "@okta/okta-auth-js": "^4.5.1",
+    "@okta/okta-signin-widget": "^5.2.1",
+    "@okta/okta-vue": "^3.1.0",
     "axios": "^0.21.1",
     "core-js": "^3.6.5",
     "file-saver": "^2.0.2",

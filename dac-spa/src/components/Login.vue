@@ -36,23 +36,25 @@ export default {
       };
       this.widget = new OktaSignIn(cfg);
 
-      this.widget.authClient.session.exists().then(exists => {
+      const scopeValues = this.$config.oidc.scope.split(" ")
+      
+      this.widget.authClient.session.exists().then(exists => {     
         if (exists) {
-          this.$auth.loginRedirect("/", {});
-        } else {
-          this.widget.renderEl(
-            { el: "#okta-signin-container" },
-            res => {
-              console.log(res);
-            },
-            err => {
-              throw err;
-            }
-          );
+          this.$auth.signInWithRedirect({ originalUri: '/'})
         }
-      });
-    });
-  },
+        else {
+          this.widget.showSignInToGetTokens({
+          el: '#okta-signin-container',
+          scopeValues
+          }).then(tokens => {
+            this.$auth.handleLoginRedirect(tokens)
+          }).catch(err => {
+        throw err
+        })}
+      })
+    })
+  }, 
+    
   destroyed() {
     // Remove the widget from the DOM on path change
     this.widget.remove();

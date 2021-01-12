@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import AuthJS from "@okta/okta-auth-js";
+import {OktaAuth} from "@okta/okta-auth-js";
 import axios from 'axios';
 
 export default {
@@ -73,8 +73,8 @@ export default {
         await this.initO4o();
     },
     methods: {
-        async getIdpsFromToken() {
-            const oktaAuth = new AuthJS({ issuer: this.$config.oidc.issuer });
+        async getIdpsFromToken() {       
+            const oktaAuth = new OktaAuth({ issuer: this.$config.oidc.issuer });
             const idToken = await oktaAuth.tokenManager.get('idToken');
             try {
                 this.tenants = !idToken.claims.tenants
@@ -114,7 +114,7 @@ export default {
             }
         },
         async initO4o() {
-            const authJs = new AuthJS({
+            const authJs = new OktaAuth({
                 issuer: this.$config.oidc.issuer.split("oauth2")[0],
                 clientId: this.$config.oidc.client_id,
                 redirectUri: this.$config.oidc.redirect_uri,
