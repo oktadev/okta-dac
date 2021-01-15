@@ -76,7 +76,7 @@ destroyOkta: destroyOktaPlan
 .PHONY: createEnvJson
 createEnvJson: 
 	@cd ${TERRAFORM} && \
-	terraform output api_env_json > ../${API_DIR}/.env.json
+	terraform output api_env_json | sed -e "s/^<<EOT//" -e "s/EOT$$//" > ../${API_DIR}/.env.json
 
 .PHONY: setupApi
 setupApi: createEnvJson
@@ -97,7 +97,7 @@ removeApi:
 .PHONY: createEnvLocal
 createEnvLocal: 
 	@cd ${TERRAFORM} && \
-	terraform output vue_env_dev > ../${SPA_DIR}/.env.development.local
+	terraform output vue_env_dev | sed -e "s/^<<EOT//" -e "s/EOT$$//" > ../${SPA_DIR}/.env.development.local
 
 .PHONY: createVueEnv
 createVueEnv: createEnvLocal
