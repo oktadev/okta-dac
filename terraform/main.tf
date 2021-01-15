@@ -54,7 +54,7 @@ resource "okta_app_oauth" "okta-dac" {
   label                      = local.app_name
   type                       = "browser"
   redirect_uris              = ["${var.app_url}/oauth/callback"]
-  post_logout_redirect_uris  = ["${var.app_url}"]
+  post_logout_redirect_uris  = [var.app_url]
   grant_types                = ["authorization_code"]
   response_types             = ["code"]
   token_endpoint_auth_method = "none"
@@ -170,7 +170,7 @@ resource "null_resource" "waitForPolicy" {
     command = "sleep ${var.sleep}"
   }
   triggers = {
-    "before" = "${okta_auth_server_policy.okta-dac.id}"
+    "before" = okta_auth_server_policy.okta-dac.id
   }
 }
 
