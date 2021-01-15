@@ -83,8 +83,8 @@
     </v-app-bar>
 
     <v-main>
-      <ServiceMsg ref="serviceMsg"/>
-      <router-view  v-on:service-msg="onServiceMessage"/>
+      <ServiceMsg ref="serviceMsg" />
+      <router-view v-on:service-msg="onServiceMessage" />
     </v-main>
   </v-app>
 </template>
@@ -110,20 +110,20 @@ export default {
           route: "users",
         },
         {
-          title: this.$t("Apps"),
+          title: this.$t("apps"),
           icon: "mdi-apps",
           route: "apps",
-        },         
+        },
         {
           title: this.$t("settings"),
           icon: "mdi-account-cog",
           route: "settings",
-        },       
+        },
       ],
       suItems: [
         { title: this.$t("home"), icon: "mdi-home-city", route: "/" },
         { title: this.$t("tenants"), icon: "mdi-domain", route: "tenants" },
-      ]
+      ],
     };
   },
   computed: {
@@ -168,7 +168,7 @@ export default {
     await this.isAuthenticated();
   },
   components: {
-    ServiceMsg
+    ServiceMsg,
   },
   watch: {
     // Everytime the route changes, check for auth status
@@ -197,8 +197,8 @@ export default {
         name: "home",
       });
     },
-    onServiceMessage(e){
-      this.$refs.serviceMsg.onServiceMessage(e)
+    onServiceMessage(e) {
+      this.$refs.serviceMsg.onServiceMessage(e);
     },
     async logout() {
       await this.$auth.logout();
