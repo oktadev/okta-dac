@@ -33,3 +33,4 @@ yarn-error.log*
 
 # other
 package-lock.json
+terraform/.terraform.lock.hcl
