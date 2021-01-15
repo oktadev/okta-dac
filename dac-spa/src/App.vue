@@ -201,7 +201,8 @@ export default {
       this.$refs.serviceMsg.onServiceMessage(e);
     },
     async logout() {
-      await this.$auth.logout();
+      // await this.$auth.signOut({ postLogoutRedirectUri: 'http://localhost:8081/login' });
+      await this.$auth.signOut();
       this.$store.commit("logout");
     },
     routeTo(route) {
