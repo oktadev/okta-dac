@@ -1,5 +1,4 @@
-<style scoped>
-</style>
+<style scoped></style>
 
 <template>
   <div class="login">
@@ -23,32 +22,35 @@ export default {
           pkce: true,
           issuer: this.$config.oidc.issuer,
           scopes: this.$config.oidc.scope.split(" "),
-          display: "page"
+          display: "page",
         },
         features: {
-          webauthn: true
+          webauthn: true,
         },
         logo: this.$config.brand.logo,
         brandName: this.$config.brand.name,
         colors: {
-          brand: this.$config.brand.color
-        }
+          brand: this.$config.brand.color,
+        },
       };
       this.widget = new OktaSignIn(cfg);
 
-      this.widget.authClient.session.exists().then(exists => {
+      this.widget.authClient.session.exists().then((exists) => {
         if (exists) {
-          this.$auth.loginRedirect("/", {});
+          this.$auth.signInWithRedirect({ originalUri: "/" });
         } else {
-          this.widget.renderEl(
-            { el: "#okta-signin-container" },
-            res => {
-              console.log(res);
-            },
-            err => {
+          const scopeValues = this.$config.oidc.scope.split(" ");
+          this.widget
+            .showSignInToGetTokens({
+              el: "#okta-signin-container",
+              scopeValues,
+            })
+            .then((tokens) => {
+              this.$auth.handleLoginRedirect(tokens);
+            })
+            .catch((err) => {
               throw err;
-            }
-          );
+            });
         }
       });
     });
@@ -56,6 +58,6 @@ export default {
   destroyed() {
     // Remove the widget from the DOM on path change
     this.widget.remove();
-  }
+  },
 };
 </script>

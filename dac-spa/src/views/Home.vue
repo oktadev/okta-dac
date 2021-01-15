@@ -67,8 +67,8 @@ export default {
     };
   },
   async created() {
-    const accessToken = await this.$auth.getAccessToken();
     await this.getIdpsFromToken();
+    const accessToken = await this.$auth.getAccessToken();
     this.getVerifiedDomains(accessToken);
     await this.initO4o();
   },
