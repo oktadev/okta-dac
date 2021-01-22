@@ -106,6 +106,7 @@ config.oidc.redirect_uri =
 
 const oktaAuth = new OktaAuth({
   issuer: config.oidc.issuer,
+  clientId: config.oidc.client_id,
   client_id: config.oidc.client_id,
   redirect_uri: config.oidc.redirect_uri,
   scopes: config.oidc.scope.split(" "),

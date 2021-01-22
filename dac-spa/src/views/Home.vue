@@ -74,7 +74,10 @@ export default {
   },
   methods: {
     async getIdpsFromToken() {
-      const oktaAuth = new OktaAuth({ issuer: this.$config.oidc.issuer });
+      const oktaAuth = new OktaAuth({
+        clientId: this.$config.oidc.client_id,
+        issuer: this.$config.oidc.issuer,
+      });
       const idToken = await oktaAuth.tokenManager.get("idToken");
       try {
         this.tenants = !idToken.claims.tenants
