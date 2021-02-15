@@ -160,9 +160,12 @@ export default {
             password: this.password,
           })
           .then(function(transaction) {
-            self.$auth.loginRedirect("/", {
-              sessionToken: transaction.sessionToken,
-            });
+            if (transaction.status === 'SUCCESS') {
+              self.$auth.session.setCookieAndRedirect(transaction.sessionToken,"/");
+            }
+            else {
+              console.error('We cannot handle the ' + transaction.status + ' status');
+            }
           })
           .catch(function(err) {
             console.error(err);
