@@ -41,7 +41,7 @@ Setting up the required configurations in Okta; the API Gateway and lambda funct
 
 - Terraform == `v0.13.x`
 - NPM >= `6.12.x`
-- Serveless >= `1.75.x`
+- Serverless >= `1.75.x`
 
 1. **macOS Catalina issues:** You must be able to run `npm install`.
     * The Makefiles runs `npm install` commands. You should make sure that your machine is able to run this command without any issues.
