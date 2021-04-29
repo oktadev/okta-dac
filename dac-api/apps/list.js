@@ -10,7 +10,7 @@ module.exports.handler = async (event, context) => {
         const groups = JSON.parse(claims.groups);
         try {
             if (groups.includes('SUPERUSERS')) {
-                const url = lib.orgUrl + '/api/v1/apps';
+                const url = lib.orgUrl + '/api/v1/apps?limit=100';
                 res = await lib.axios.get(url, lib.headers);
                 filtered = res.data.filter(app => {
                     return (app.label.startsWith(lib.DAC_PREFIX));

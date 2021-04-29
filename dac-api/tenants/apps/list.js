@@ -10,7 +10,7 @@ async function getTenantApps(tenant, claims) {
             };
 
         try {
-            const res = await lib.axios.get(lib.orgUrl + '/api/v1/apps', lib.headers);
+            const res = await lib.axios.get(lib.orgUrl + '/api/v1/apps?limit=100', lib.headers);
             let filtered = [];
             for (const app of res.data) {
                 if (ids[app.id]) {
