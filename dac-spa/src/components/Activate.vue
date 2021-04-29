@@ -97,6 +97,7 @@ export default {
       password: undefined,
       password2: undefined,
       stateToken: false,
+      host: undefined
     };
   },
   computed: {
@@ -109,6 +110,7 @@ export default {
     },
   },
   async created() {
+    this.host = window.location.protocol + "//" + window.location.host
     await this.validateToken();
   },
   methods: {
@@ -161,7 +163,7 @@ export default {
           })
           .then(function(transaction) {
             if (transaction.status === 'SUCCESS') {
-              self.$auth.session.setCookieAndRedirect(transaction.sessionToken,"/");
+              oktaAuth.session.setCookieAndRedirect(transaction.sessionToken, self.host + "/");
             }
             else {
               console.error('We cannot handle the ' + transaction.status + ' status');
