@@ -2,11 +2,11 @@
     <v-card class="mx-auto">
         <v-stepper v-model="verificationStep">
             <v-stepper-header>
-                <v-stepper-step :complete="verificationStep > 1" step="1">New Domain</v-stepper-step>
+                <v-stepper-step :complete="verificationStep > 1" step="1" color="primary">New Domain</v-stepper-step>
                 <v-divider></v-divider>
-                <v-stepper-step :complete="verificationStep > 2" step="2">Verification</v-stepper-step>
+                <v-stepper-step :complete="verificationStep > 2" step="2" color="primary">Verification</v-stepper-step>
                 <v-divider></v-divider>
-                <v-stepper-step step="3">Complete</v-stepper-step>
+                <v-stepper-step step="3" color="success">Complete</v-stepper-step>
             </v-stepper-header>
 
             <v-stepper-items>

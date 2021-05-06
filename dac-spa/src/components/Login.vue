@@ -12,8 +12,8 @@ import "@okta/okta-signin-widget/dist/css/okta-sign-in.min.css";
 
 export default {
   name: "Login",
-  mounted: function() {
-    this.$nextTick(function() {
+  mounted: function () {
+    this.$nextTick(function () {
       const cfg = {
         baseUrl: this.$config.oidc.issuer.split("oauth2")[0],
         clientId: this.$config.oidc.client_id,
@@ -30,7 +30,7 @@ export default {
         logo: this.$config.brand.logo,
         brandName: this.$config.brand.name,
         colors: {
-          brand: this.$config.brand.color,
+          brand: this.$vuetify.theme.themes.light.primary,
         },
       };
       this.widget = new OktaSignIn(cfg);

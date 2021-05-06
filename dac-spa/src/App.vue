@@ -25,7 +25,7 @@
 
         <v-list-item v-for="item in menuItems" :key="item.title" link>
           <v-list-item-icon>
-            <v-icon color="primary">{{ item.icon }}</v-icon>
+            <v-icon :color="$config.brand.colorAlt">{{ item.icon }}</v-icon>
           </v-list-item-icon>
 
           <router-link :to="item.route" class="no-deco white--text">
@@ -44,7 +44,7 @@
         </div>
       </template>
     </v-navigation-drawer>
-    <v-app-bar app clipped-left :color="$config.brand.color" dark flat>
+    <v-app-bar app clipped-left color="primary" dark flat>
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" v-if="authenticated" />
       <v-img
         class="mx-2"
@@ -91,7 +91,6 @@
 
 <script>
 import md5 from "md5";
-import AuthJS from "@okta/okta-auth-js";
 import ServiceMsg from "@/components/ServiceMsg";
 
 export default {
@@ -141,7 +140,7 @@ export default {
     },
     gravatar() {
       return this.user
-        ? "https://www.gravatar.com/avatar/" + md5(this.user.preferred_username)
+        ? "https://www.gravatar.com/avatar/" + md5(this.user.preferred_username) + "?d=robohash"
         : "";
     },
     isTenantAdmin() {
