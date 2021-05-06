@@ -11,7 +11,7 @@
                 </v-list-item-title>
                 <v-list-item-subtitle>{{ card.subtitle }}</v-list-item-subtitle>
               </v-list-item-content>
-              <v-icon size="80">mdi-{{ card.icon }}</v-icon>
+              <v-icon size="80" color="primary">mdi-{{ card.icon }}</v-icon>
             </v-list-item>
           </v-card>
         </v-col>

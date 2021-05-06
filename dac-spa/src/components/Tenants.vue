@@ -2,6 +2,9 @@
 .simple-table-progress-bar {
   height: 2px;
 }
+.hyperlink {
+  color: var(--text-color)
+}
 </style>
 
 <template>
@@ -9,10 +12,10 @@
     <v-card-title>
       {{ $t("tenants") }}
       <v-btn
-        color="primary"
         class="mx-2"
         small
         fab
+        color="primary"
         @click="add"
         :disabled="loading"
       >
@@ -50,7 +53,7 @@
             <td>
               <v-tooltip right>
                 <template v-slot:activator="{ on }">
-                  <a v-on:click="editItem(item)" v-on="on">{{ item.name }}</a>
+                  <a :style="cssVars" class="hyperlink" v-on:click="editItem(item)" v-on="on">{{ item.name }}</a>
                 </template>
                 <v-card flat color="transparent" class="mx-auto">
                   <div class="white--text caption">View / Manage</div>
@@ -91,6 +94,7 @@
 <script>
 import axios from "axios";
 import Tenant from "@/components/Tenant";
+import tinycolor from "tinycolor2";
 
 export default {
   name: "tenants",
@@ -112,6 +116,15 @@ export default {
       next: null,
       showNext: true
     };
+  },
+  computed: {
+    cssVars() {
+      return {
+        '--text-color': this.$config.brand.isDark
+          ? tinycolor(this.$vuetify.theme.themes.light.primary).lighten(30)
+          : this.$vuetify.theme.themes.light.primary
+      }
+    }
   },
   created() {
     this.getTenants();
