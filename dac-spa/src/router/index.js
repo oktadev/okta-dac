@@ -124,23 +124,4 @@ Vue.use(Auth, {
 
 Vue.use(authn, Vue.prototype.$auth);
 
-// const onAuthRequired = async (from, to, next) => {
-//     document.title = config.brand.name;
-//     if (from.matched.some(record => record.meta.requiresAuth) && !(await Vue.prototype.$auth.isAuthenticated())) {
-//         document.title = config.brand.name + " - " + "Sign In";
-//         if (config.loginRedirect) {
-//             Vue.prototype.$auth.loginRedirect('/')
-//         } else {
-//             next({
-//                 path: '/login'
-//             })
-//         }
-//     } else {
-//         document.title = config.brand.name + " - " + from.meta.title;
-//         next()
-//     }
-// }
-
-// router.beforeEach(onAuthRequired)
-
 export default router;
