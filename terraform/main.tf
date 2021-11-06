@@ -41,7 +41,7 @@ resource "okta_group_memberships" "dac-superusers" {
   ]
 }
 resource "okta_group_role" "dac-superusers" {
-  group_id    = okta_group.dac-superusers.id
+  group_id  = okta_group.dac-superusers.id
   role_type = "SUPER_ADMIN"
 }
 
@@ -105,7 +105,12 @@ resource "okta_trusted_origin" "okta-dac" {
   origin = var.app_url
   scopes = ["CORS", "REDIRECT"]
 }
-
+# Create Trusted Origin for the BYOB Dashboard APP
+resource "okta_trusted_origin" "okta-byob-dashboard" {
+  name   = "BYOB Dashboard"
+  origin = var.byob_app_url
+  scopes = ["CORS", "REDIRECT"]
+}
 # Create Custom Authorization Server
 resource "okta_auth_server" "okta-dac" {
   audiences   = ["api://${local.app_name}"]
