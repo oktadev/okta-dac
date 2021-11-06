@@ -12,13 +12,14 @@ provider "okta" {
 # Local variables
 locals {
   app_name = "okta-dac"
+  byob_app_name= "okta-byob-dashboard"
 }
 
 variable "sleep" {
   default = 6
 }
 
-# dac Users - Everyone 
+# dac Users - Everyone
 data "okta_group" "dac-users" {
   name = "Everyone"
 }
@@ -32,10 +33,6 @@ data "okta_user" "dac-superuser" {
 
 resource "okta_group" "dac-superusers" {
   name = "SUPERUSERS"
-
-  users = [
-    data.okta_user.dac-superuser.id
-  ]
 }
 
 resource "okta_group_roles" "dac-superusers" {
@@ -61,6 +58,18 @@ resource "okta_app_oauth" "okta-dac" {
   issuer_mode                = "ORG_URL"
   consent_method             = "TRUSTED"
 }
+# Create BYOB Dashboard SPA App
+resource "okta_app_oauth" "okta-byob-dashboard" {
+  label                      = local.byob_app_name
+  type                       = "browser"
+  redirect_uris              = ["${var.byob_app_url}/oauth/callback"]
+  post_logout_redirect_uris  = [var.byob_app_url]
+  grant_types                = ["authorization_code"]
+  response_types             = ["code"]
+  token_endpoint_auth_method = "none"
+  issuer_mode                = "ORG_URL"
+  consent_method             = "TRUSTED"
+}
 
 resource "okta_app_user_schema" "okta-dac-tenants" {
   app_id      = okta_app_oauth.okta-dac.id
@@ -77,6 +86,11 @@ resource "okta_app_user_schema" "okta-dac-tenants" {
 # Create the App Assignment
 resource "okta_app_group_assignment" "okta-dac" {
   app_id   = okta_app_oauth.okta-dac.id
+  group_id = okta_group.dac-superusers.id
+}
+# Create the BYOB Dashboard App Assignment
+resource "okta_app_group_assignment" "okta-byob-dashboard" {
+  app_id   = okta_app_oauth.okta-byob-dashboard.id
   group_id = okta_group.dac-superusers.id
 }
 
@@ -152,7 +166,7 @@ resource "okta_auth_server_claim" "okta-dac-groups-id" {
   scopes            = [okta_auth_server_scope.okta-dac.name]
 }
 
-# Deprecate. email template is not supported by Provider oktadeveloper/okta 
+# Deprecate. email template is not supported by Provider oktadeveloper/okta
 # Change the welcome email template
 // resource "okta_template_email" "email-welcome" {
 //   type = "email.welcome"

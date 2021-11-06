@@ -15,6 +15,10 @@ variable "app_url" {
   type    = string
   default = "http://localhost:8080"
 }
+variable "byob-dashboard-app_url" {
+  type    = string
+  default = "http://localhost:8081"
+}
 
 variable "superuser_login" {
   type = string
