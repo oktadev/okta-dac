@@ -40,9 +40,9 @@ resource "okta_group_memberships" "dac-superusers" {
     data.okta_user.dac-superuser.id
   ]
 }
-resource "okta_group_roles" "dac-superusers" {
+resource "okta_group_role" "dac-superusers" {
   group_id    = okta_group.dac-superusers.id
-  admin_roles = ["SUPER_ADMIN"]
+  role_type = "SUPER_ADMIN"
 }
 
 # Get default IDP Policy
