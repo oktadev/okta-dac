@@ -15,7 +15,7 @@ variable "app_url" {
   type    = string
   default = "http://localhost:8080"
 }
-variable "byob-dashboard-app_url" {
+variable "byob_dashboard_app_url" {
   type    = string
   default = "http://localhost:8081"
 }

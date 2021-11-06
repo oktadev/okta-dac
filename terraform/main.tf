@@ -11,8 +11,8 @@ provider "okta" {
 
 # Local variables
 locals {
-  app_name      = "okta-dac"
-  byob_app_name = "okta-byob-dashboard"
+  app_name                = "okta-dac"
+  byob_dashboard_app_name = "okta-byob-dashboard"
 }
 
 variable "sleep" {
@@ -62,18 +62,25 @@ resource "okta_app_oauth" "okta-dac" {
   token_endpoint_auth_method = "none"
   issuer_mode                = "ORG_URL"
   consent_method             = "TRUSTED"
+  lifecycle {
+    ignore_changes = [groups, users]
+  }
 }
+
 # Create BYOB Dashboard SPA App
 resource "okta_app_oauth" "okta-byob-dashboard" {
-  label                      = local.byob_app_name
+  label                      = local.byob_dashboard_app_name
   type                       = "browser"
-  redirect_uris              = ["${var.byob_app_url}/oauth/callback"]
-  post_logout_redirect_uris  = [var.byob_app_url]
+  redirect_uris              = ["${var.byob_dashboard_app_url}/oauth/callback"]
+  post_logout_redirect_uris  = [var.byob_dashboard_app_url]
   grant_types                = ["authorization_code"]
   response_types             = ["code"]
   token_endpoint_auth_method = "none"
   issuer_mode                = "ORG_URL"
   consent_method             = "TRUSTED"
+  lifecycle {
+    ignore_changes = [groups, users]
+  }
 }
 
 resource "okta_app_user_schema_property" "okta-dac-tenants" {
@@ -108,7 +115,7 @@ resource "okta_trusted_origin" "okta-dac" {
 # Create Trusted Origin for the BYOB Dashboard APP
 resource "okta_trusted_origin" "okta-byob-dashboard" {
   name   = "BYOB Dashboard"
-  origin = var.byob_app_url
+  origin = var.byob_dashboard_app_url
   scopes = ["CORS", "REDIRECT"]
 }
 # Create Custom Authorization Server
