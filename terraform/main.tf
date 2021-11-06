@@ -11,8 +11,8 @@ provider "okta" {
 
 # Local variables
 locals {
-  app_name = "okta-dac"
-  byob_app_name= "okta-byob-dashboard"
+  app_name      = "okta-dac"
+  byob_app_name = "okta-byob-dashboard"
 }
 
 variable "sleep" {
@@ -34,7 +34,12 @@ data "okta_user" "dac-superuser" {
 resource "okta_group" "dac-superusers" {
   name = "SUPERUSERS"
 }
-
+resource "okta_group_memberships" "dac-superusers" {
+  group_id = okta_group.dac-superusers.id
+  users = [
+    data.okta_user.dac-superuser.id
+  ]
+}
 resource "okta_group_roles" "dac-superusers" {
   group_id    = okta_group.dac-superusers.id
   admin_roles = ["SUPER_ADMIN"]
