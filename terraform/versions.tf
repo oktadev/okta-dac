@@ -7,7 +7,7 @@ terraform {
       source = "hashicorp/aws"
     }
     okta = {
-      source  = "oktadeveloper/okta"
+      source  = "okta/okta"
       version = "~> 3.0"
     }
   }
