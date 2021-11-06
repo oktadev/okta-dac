@@ -76,7 +76,7 @@ resource "okta_app_oauth" "okta-byob-dashboard" {
   consent_method             = "TRUSTED"
 }
 
-resource "okta_app_user_schema" "okta-dac-tenants" {
+resource "okta_app_user_schema_property" "okta-dac-tenants" {
   app_id      = okta_app_oauth.okta-dac.id
   index       = "tenants"
   title       = "Tenants"
