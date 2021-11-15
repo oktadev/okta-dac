@@ -12,7 +12,6 @@ provider "okta" {
 # Local variables
 locals {
   app_name                = "okta-dac"
-  byob_dashboard_app_name = "okta-byob-dashboard"
 }
 
 variable "sleep" {
@@ -67,22 +66,6 @@ resource "okta_app_oauth" "okta-dac" {
   }
 }
 
-# Create BYOB Dashboard SPA App
-resource "okta_app_oauth" "okta-byob-dashboard" {
-  label                      = local.byob_dashboard_app_name
-  type                       = "browser"
-  redirect_uris              = ["${var.byob_dashboard_app_url}/oauth/callback"]
-  post_logout_redirect_uris  = [var.byob_dashboard_app_url]
-  grant_types                = ["authorization_code"]
-  response_types             = ["code"]
-  token_endpoint_auth_method = "none"
-  issuer_mode                = "ORG_URL"
-  consent_method             = "TRUSTED"
-  lifecycle {
-    ignore_changes = [groups, users]
-  }
-}
-
 resource "okta_app_user_schema_property" "okta-dac-tenants" {
   app_id      = okta_app_oauth.okta-dac.id
   index       = "tenants"
@@ -100,11 +83,6 @@ resource "okta_app_group_assignment" "okta-dac" {
   app_id   = okta_app_oauth.okta-dac.id
   group_id = okta_group.dac-superusers.id
 }
-# Create the BYOB Dashboard App Assignment
-resource "okta_app_group_assignment" "okta-byob-dashboard" {
-  app_id   = okta_app_oauth.okta-byob-dashboard.id
-  group_id = okta_group.dac-superusers.id
-}
 
 # Create Trusted Origin for the APP
 resource "okta_trusted_origin" "okta-dac" {
@@ -112,12 +90,7 @@ resource "okta_trusted_origin" "okta-dac" {
   origin = var.app_url
   scopes = ["CORS", "REDIRECT"]
 }
-# Create Trusted Origin for the BYOB Dashboard APP
-resource "okta_trusted_origin" "okta-byob-dashboard" {
-  name   = "BYOB Dashboard"
-  origin = var.byob_dashboard_app_url
-  scopes = ["CORS", "REDIRECT"]
-}
+
 # Create Custom Authorization Server
 resource "okta_auth_server" "okta-dac" {
   audiences   = ["api://${local.app_name}"]
@@ -183,16 +156,17 @@ resource "okta_auth_server_claim" "okta-dac-groups-id" {
   scopes            = [okta_auth_server_scope.okta-dac.name]
 }
 
+# Deprecate. email template is not supported by provider okta/okta
 # Change the welcome email template
-resource "okta_template_email" "email-welcome" {
-  type = "email.welcome"
+//resource "okta_template_email" "email-welcome" {
+//  type = "email.welcome"
 
-  translations {
-    language = "en"
-    subject  = "Welcome to DAC"
-    template = "<div style=\"background-color:#fafafa;margin:0\"> \n  <table style=\"font-family:'proxima nova' , 'century gothic' , 'arial' , 'verdana' , sans-serif;font-size:14px;color:#5e5e5e;width:98%;max-width:600px;float:none;margin:0 auto\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" valign=\"top\" align=\"left\">\n    <tbody>\n      <tr bgcolor=\"#ffffff\">\n        <td> \n          <table bgcolor=\"#ffffff\" style=\"width:100%;line-height:20px;padding:32px;border:1px solid;border-color:#f0f0f0\" cellpadding=\"0\">\n            <tbody>\n              <tr>\n                <td style=\"padding-top:24px;vertical-align:bottom\"> Hi $${f:escapeHtml(user.firstName)}, </td>\n              </tr>\n              <tr>\n                <td style=\"padding-top:24px\"> <strong>Welcome to DAC</strong> <br/> Click the following link to activate your account:</strong> </td>\n              </tr>\n              <tr>\n                <td align=\"center\" style=\"border:none;padding:25px 0 0 0\"> \n                  <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" valign=\"top\">\n                    <tbody>\n                      <tr>\n                        <td align=\"center\" style=\"display:inline-block;padding:10px;border:1px solid;text-align:center;cursor:pointer;color:#fff;border-radius:3px;background-color:#44bc98;border-color:#328c71 #328c71 #2f856b;box-shadow:#d8d8d8 0 1px 0\"> <a id=\"reset-password-link\" href=\"http://localhost:8080/activate/$${activationToken}\" style=\"text-decoration:none\"> <span style=\"font-size:13.5px;color:#fff\"> Activate Account </span> </a> </td>\n                      </tr>\n                      <tr>\n                        <td align=\"center\" style=\"color:#999\"> This link expires in $${f:formatTimeDiffHoursNowInUserLocale(org.activationTokenExpirationHours)}. </td>\n                      </tr>\n                    </tbody>\n                  </table> </td>\n              </tr>\n              <tr>\n                <td style=\"padding-top:24px\"> Your username is <strong>$${user.login}</strong></td>\n              </tr>\n            </tbody>\n          </table> </td>\n      </tr>\n      <tr>\n        <td style=\"font-size:12px;padding:16px 0 30px 50px;color:#999\"> This is an automatically generated message from <a href=\"http://www.okta.com\" style=\"color:rgb( 97 , 97 , 97 )\">Okta</a>. Replies are not monitored or answered. </td>\n      </tr>\n    </tbody>\n  </table> \n</div>"
-  }
-}
+//  translations {
+//    language = "en"
+//    subject  = "Welcome to DAC"
+//    template = "<div style=\"background-color:#fafafa;margin:0\"> \n  <table style=\"font-family:'proxima nova' , 'century gothic' , 'arial' , 'verdana' , sans-serif;font-size:14px;color:#5e5e5e;width:98%;max-width:600px;float:none;margin:0 auto\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" valign=\"top\" align=\"left\">\n    <tbody>\n      <tr bgcolor=\"#ffffff\">\n        <td> \n          <table bgcolor=\"#ffffff\" style=\"width:100%;line-height:20px;padding:32px;border:1px solid;border-color:#f0f0f0\" cellpadding=\"0\">\n            <tbody>\n              <tr>\n                <td style=\"padding-top:24px;vertical-align:bottom\"> Hi $${f:escapeHtml(user.firstName)}, </td>\n              </tr>\n              <tr>\n                <td style=\"padding-top:24px\"> <strong>Welcome to DAC</strong> <br/> Click the following link to activate your account:</strong> </td>\n              </tr>\n              <tr>\n                <td align=\"center\" style=\"border:none;padding:25px 0 0 0\"> \n                  <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" valign=\"top\">\n                    <tbody>\n                      <tr>\n                        <td align=\"center\" style=\"display:inline-block;padding:10px;border:1px solid;text-align:center;cursor:pointer;color:#fff;border-radius:3px;background-color:#44bc98;border-color:#328c71 #328c71 #2f856b;box-shadow:#d8d8d8 0 1px 0\"> <a id=\"reset-password-link\" href=\"http://localhost:8080/activate/$${activationToken}\" style=\"text-decoration:none\"> <span style=\"font-size:13.5px;color:#fff\"> Activate Account </span> </a> </td>\n                      </tr>\n                      <tr>\n                        <td align=\"center\" style=\"color:#999\"> This link expires in $${f:formatTimeDiffHoursNowInUserLocale(org.activationTokenExpirationHours)}. </td>\n                      </tr>\n                    </tbody>\n                  </table> </td>\n              </tr>\n              <tr>\n                <td style=\"padding-top:24px\"> Your username is <strong>$${user.login}</strong></td>\n              </tr>\n            </tbody>\n          </table> </td>\n      </tr>\n      <tr>\n        <td style=\"font-size:12px;padding:16px 0 30px 50px;color:#999\"> This is an automatically generated message from <a href=\"http://www.okta.com\" style=\"color:rgb( 97 , 97 , 97 )\">Okta</a>. Replies are not monitored or answered. </td>\n      </tr>\n    </tbody>\n  </table> \n</div>"
+//  }
+//}
 
 # insert a delay
 resource "null_resource" "waitForPolicy" {
